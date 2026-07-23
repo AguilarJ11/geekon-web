@@ -42,7 +42,7 @@ export default function Navbar() {
       }}
     >
       {/* Logo */}
-      <Link href="/" className="text-xl font-black tracking-tight shrink-0">
+      <Link href="/" className="text-2xl font-black tracking-tight shrink-0">
         <span style={{ color: "#7B2FFF" }}>GEEK</span>
         <span style={{ color: "#00E5FF" }}>ON</span>
         <span style={{ color: "#FF2D9B" }}>!</span>
@@ -135,14 +135,14 @@ export default function Navbar() {
           <>
             <Link
               href="/login"
-              className="hidden sm:block px-4 py-2 rounded-lg text-sm font-semibold transition-all hover:border-[rgba(123,47,255,0.5)] hover:text-white"
+              className="hidden sm:block px-4 py-2 rounded-lg text-base font-semibold transition-all hover:border-[rgba(123,47,255,0.5)] hover:text-white"
               style={{ border: "1px solid rgba(123,47,255,0.25)", color: "rgba(234,230,255,0.6)" }}
             >
               Iniciar sesión
             </Link>
             <Link
               href="/register"
-              className="px-4 py-2 rounded-lg text-sm font-bold transition-all hover:-translate-y-px hover:shadow-[0_4px_20px_rgba(123,47,255,0.45)]"
+              className="px-4 py-2 rounded-lg text-base font-bold transition-all hover:-translate-y-px hover:shadow-[0_4px_20px_rgba(123,47,255,0.45)]"
               style={{ background: "linear-gradient(135deg, #7B2FFF, #A855F7)", color: "#fff" }}
             >
               Registrarse
