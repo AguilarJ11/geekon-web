@@ -13,8 +13,9 @@ export interface DefaultField {
 export const DEFAULT_FIELDS: Partial<Record<FormCategory, DefaultField[]>> = {
   STAND: [
     { type: "TEXT",     label: "Nombre del emprendimiento", placeholder: "Ej: La Cueva del Cómic",                required: true },
+    { type: "TEXT",     label: "Nombre de contacto",         placeholder: "Ej: María Pérez",                       required: true },
     { type: "PHONE",    label: "Teléfono de contacto",       placeholder: "Ej: 099 123 456",                       required: true },
     { type: "TEXTAREA", label: "Descripción breve",          placeholder: "Contanos qué vendés o qué hacés en tu stand...", required: true },
-    { type: "TEXT",     label: "Redes sociales",              placeholder: "Instagram, TikTok, etc. (opcional)",    required: false },
+    { type: "TEXT",     label: "Redes sociales",              placeholder: "Instagram, TikTok, etc.",               required: true },
   ],
 };
