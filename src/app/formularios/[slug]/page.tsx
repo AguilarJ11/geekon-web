@@ -30,7 +30,11 @@ interface Form {
   slug: string;
   fields: Field[];
   standOptions: StandOption[];
+  depositDueDate: string | null;
+  fullPaymentDueDate: string | null;
 }
+
+const DATE_FORMAT = new Intl.DateTimeFormat("es-UY", { day: "numeric", month: "long", year: "numeric" });
 
 const PRICE_FORMAT = new Intl.NumberFormat("es-UY", { style: "currency", currency: "UYU", maximumFractionDigits: 0 });
 
@@ -256,6 +260,22 @@ export default function PublicFormPage({ params }: { params: Promise<{ slug: str
                   />
                 ))}
               </div>
+            </div>
+          )}
+
+          {(form!.depositDueDate || form!.fullPaymentDueDate) && (
+            <div className="rounded-xl px-4 py-3 text-sm space-y-1"
+              style={{ background: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.25)" }}>
+              {form!.depositDueDate && (
+                <div className="text-amber">
+                  Seña hasta el <strong>{DATE_FORMAT.format(new Date(form!.depositDueDate))}</strong>
+                </div>
+              )}
+              {form!.fullPaymentDueDate && (
+                <div className="text-amber">
+                  Pago completo hasta el <strong>{DATE_FORMAT.format(new Date(form!.fullPaymentDueDate))}</strong>
+                </div>
+              )}
             </div>
           )}
 

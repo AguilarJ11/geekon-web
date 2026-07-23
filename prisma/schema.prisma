@@ -64,6 +64,12 @@ model Form {
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 
+  // Solo se usan en formularios de categoría STAND. Sirven para mostrarle
+  // el plazo a quien se postula y, más adelante, para disparar recordatorios
+  // (WhatsApp u otro canal) unos días antes de cada vencimiento.
+  depositDueDate     DateTime?
+  fullPaymentDueDate DateTime?
+
   owner        User?            @relation("FormOwner", fields: [ownerId], references: [id], onDelete: SetNull)
   fields       FormField[]
   submissions  FormSubmission[]

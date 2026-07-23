@@ -64,8 +64,13 @@ function WinnerBadge() {
   );
 }
 
+const DATE_FORMAT = new Intl.DateTimeFormat("es-UY", { day: "numeric", month: "long", year: "numeric" });
+
 interface FormWithSubmissions {
-  form: { id: string; title: string; slug: string; fields: FormField[] };
+  form: {
+    id: string; title: string; slug: string; fields: FormField[];
+    depositDueDate: string | null; fullPaymentDueDate: string | null;
+  };
   submissions: Submission[];
 }
 
@@ -118,7 +123,19 @@ export default function SubmissionsManager({
           <Button variant="ghost" size="sm" href={backHref}>← Volver</Button>
         </div>
         <h1 className="text-3xl font-black mb-1 mt-4">{data.form.title}</h1>
-        <p className="text-content/40 text-sm mb-8">{data.submissions.length} respuestas</p>
+        <p className="text-content/40 text-sm mb-4">{data.submissions.length} respuestas</p>
+
+        {(data.form.depositDueDate || data.form.fullPaymentDueDate) && (
+          <div className="rounded-xl px-4 py-3 text-sm mb-6 flex flex-wrap gap-x-6 gap-y-1"
+            style={{ background: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.25)" }}>
+            {data.form.depositDueDate && (
+              <div className="text-amber">Seña hasta el <strong>{DATE_FORMAT.format(new Date(data.form.depositDueDate))}</strong></div>
+            )}
+            {data.form.fullPaymentDueDate && (
+              <div className="text-amber">Pago completo hasta el <strong>{DATE_FORMAT.format(new Date(data.form.fullPaymentDueDate))}</strong></div>
+            )}
+          </div>
+        )}
 
         {data.submissions.length === 0 ? (
           <div className="text-center py-20 text-content/30 border border-dashed border-white/10 rounded-xl">

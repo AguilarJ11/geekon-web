@@ -30,10 +30,12 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const allowedAlways = ["title", "description", "isPublished"] as const;
   for (const key of allowedAlways) if (key in data) update[key] = data[key];
 
-  // Categoría, edición y dueño son decisiones administrativas: solo el admin global las toca.
+  // Categoría, edición, plazos y dueño son decisiones administrativas: solo el admin global las toca.
   if (access.isAdmin) {
     if ("category" in data) update.category = data.category;
     if ("edition" in data) update.edition = data.edition?.trim() || null;
+    if ("depositDueDate" in data) update.depositDueDate = data.depositDueDate ? new Date(data.depositDueDate) : null;
+    if ("fullPaymentDueDate" in data) update.fullPaymentDueDate = data.fullPaymentDueDate ? new Date(data.fullPaymentDueDate) : null;
 
     if ("ownerEmail" in data) {
       if (!data.ownerEmail?.trim()) {

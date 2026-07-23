@@ -22,6 +22,8 @@ interface Form {
   slug: string;
   category: string;
   edition: string | null;
+  depositDueDate: string | null;
+  fullPaymentDueDate: string | null;
   isPublished: boolean;
   fields: Field[];
   standOptions: StandOption[];
@@ -80,6 +82,15 @@ export default function EditFormPage({ params }: { params: Promise<{ id: string 
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ edition: form.edition }),
+    });
+  }
+
+  async function saveDeadline(key: "depositDueDate" | "fullPaymentDueDate", value: string) {
+    setForm(f => f ? { ...f, [key]: value || null } : f);
+    await fetch(`/api/admin/forms/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ [key]: value || null }),
     });
   }
 
@@ -281,6 +292,31 @@ export default function EditFormPage({ params }: { params: Promise<{ id: string 
               placeholder="Ej: GeekOn 2026"
             />
           </div>
+
+          {form.category === "STAND" && (
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs text-content/50 mb-1.5">Fecha límite de seña</label>
+                <input
+                  type="date"
+                  value={form.depositDueDate?.slice(0, 10) ?? ""}
+                  onChange={e => saveDeadline("depositDueDate", e.target.value)}
+                  className="input-premium text-sm py-2"
+                  style={{ colorScheme: "dark" }}
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-content/50 mb-1.5">Fecha límite de pago completo</label>
+                <input
+                  type="date"
+                  value={form.fullPaymentDueDate?.slice(0, 10) ?? ""}
+                  onChange={e => saveDeadline("fullPaymentDueDate", e.target.value)}
+                  className="input-premium text-sm py-2"
+                  style={{ colorScheme: "dark" }}
+                />
+              </div>
+            </div>
+          )}
 
           <div>
             <label className="block text-xs text-content/50 mb-1.5">Organizador / dueño del formulario</label>
