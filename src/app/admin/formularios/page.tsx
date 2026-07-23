@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Button from "@/components/ui/Button";
 import Eyebrow from "@/components/ui/Eyebrow";
+import AdminTabs from "@/components/admin/AdminTabs";
 import { FORM_CATEGORIES, categoryInfo } from "@/lib/form-categories";
 
 interface Form {
@@ -75,7 +76,7 @@ export default function AdminFormsPage() {
   return (
     <div className="min-h-screen bg-navy px-6 pt-[94px] pb-12">
       <div className="max-w-4xl mx-auto">
-        <div className="mb-10 flex items-start justify-between gap-4">
+        <div className="mb-2 flex items-start justify-between gap-4">
           <div>
             <Eyebrow color="violet">Admin</Eyebrow>
             <h1 className="text-4xl font-black mt-3 tracking-tight">Formularios</h1>
@@ -83,6 +84,8 @@ export default function AdminFormsPage() {
           </div>
           <Button onClick={() => setShowNew(true)} size="md">+ Nuevo formulario</Button>
         </div>
+
+        <AdminTabs />
 
         {/* New form modal */}
         {showNew && (

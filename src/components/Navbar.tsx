@@ -136,7 +136,7 @@ export default function Navbar() {
                   </Link>
                   {(session.user as { role?: string })?.role === "ADMIN" && (
                     <Link
-                      href="/admin/formularios"
+                      href="/admin"
                       className="flex items-center gap-2.5 px-4 py-3 text-sm text-content transition-colors hover:bg-violet/[0.12] focus-visible:outline-none focus-visible:bg-violet/[0.12]"
                       onClick={() => setMenuOpen(false)}
                     >
