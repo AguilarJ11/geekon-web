@@ -373,16 +373,22 @@ export default async function PerfilPage() {
                 </div>
 
                 <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                  {user.submissions.map((sub) => (
-                    <ApplicationCard
-                      key={sub.id}
-                      title={sub.form.title}
-                      edition={sub.form.edition}
-                      createdAt={sub.createdAt}
-                      status={sub.status}
-                      isWinner={sub.isWinner}
-                    />
-                  ))}
+                  {user.submissions.map((sub) => {
+                    const cat = categoryInfo(sub.form.category);
+                    return (
+                      <ApplicationCard
+                        key={sub.id}
+                        id={sub.id}
+                        title={sub.form.title}
+                        edition={sub.form.edition}
+                        categoryIcon={cat.icon}
+                        categoryLabel={cat.label}
+                        createdAt={sub.createdAt}
+                        status={sub.status}
+                        isWinner={sub.isWinner}
+                      />
+                    );
+                  })}
                 </div>
               </section>
 

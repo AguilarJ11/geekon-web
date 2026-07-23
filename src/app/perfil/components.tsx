@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 export function BadgeCard({
   icon, name, edition, awardedAt,
 }: {
@@ -116,27 +118,39 @@ const STATUS_STYLE: Record<SubmissionStatus, { color: string; background: string
 };
 
 export function ApplicationCard({
-  title, edition, createdAt, status, isWinner,
+  id, title, edition, categoryIcon, categoryLabel, createdAt, status, isWinner,
 }: {
-  title: string; edition: string | null; createdAt: Date; status: SubmissionStatus; isWinner: boolean;
+  id: string; title: string; edition: string | null;
+  categoryIcon: string; categoryLabel: string;
+  createdAt: Date; status: SubmissionStatus; isWinner: boolean;
 }) {
   return (
-    <div style={{
+    <Link href={`/perfil/postulaciones/${id}`} style={{
       display: "flex", alignItems: "center", justifyContent: "space-between",
       gap: "12px", padding: "14px 18px",
       background: "rgba(255,255,255,0.02)",
       border: "1px solid rgba(255,255,255,0.08)",
       borderRadius: "14px",
+      textDecoration: "none", color: "inherit",
+      transition: "border-color 0.2s, background 0.2s",
+    }}
+    onMouseEnter={(e) => {
+      e.currentTarget.style.borderColor = "rgba(123,47,255,0.35)";
+      e.currentTarget.style.background = "rgba(123,47,255,0.04)";
+    }}
+    onMouseLeave={(e) => {
+      e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
+      e.currentTarget.style.background = "rgba(255,255,255,0.02)";
     }}>
       <div>
         <p style={{ fontSize: "0.85rem", fontWeight: 700 }}>
-          {title}{edition && <span style={{ color: "rgba(234,230,255,0.4)", fontWeight: 500 }}> · {edition}</span>}
+          <span aria-hidden="true">{categoryIcon}</span> {title}{edition && <span style={{ color: "rgba(234,230,255,0.4)", fontWeight: 500 }}> · {edition}</span>}
         </p>
         <p style={{ fontSize: "0.7rem", color: "rgba(234,230,255,0.35)", marginTop: "2px" }}>
-          Enviada el {new Date(createdAt).toLocaleDateString("es-UY", { day: "2-digit", month: "short", year: "numeric" })}
+          {categoryLabel} · Enviada el {new Date(createdAt).toLocaleDateString("es-UY", { day: "2-digit", month: "short", year: "numeric" })}
         </p>
       </div>
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
         {isWinner && (
           <span style={{
             padding: "4px 12px", borderRadius: "100px",
@@ -157,7 +171,8 @@ export function ApplicationCard({
         >
           {STATUS_LABEL[status]}
         </span>
+        <span style={{ color: "rgba(234,230,255,0.3)", fontSize: "0.9rem" }} aria-hidden="true">›</span>
       </div>
-    </div>
+    </Link>
   );
 }
