@@ -61,6 +61,17 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.role = (user as { role?: string }).role;
         token.id   = user.id;
+      } else if (token.id) {
+        // Se refresca el rol contra la base en cada request de NextAuth (no
+        // solo al loguearse): así un cambio de rol hecho por fuera (ej. por
+        // consola) se refleja sin que el usuario tenga que volver a loguearse.
+        // El middleware lee este JWT directamente vía getToken(), por eso el
+        // refresh tiene que pasar por acá y no solo por el callback de sesión.
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.id as string },
+          select: { role: true },
+        });
+        if (dbUser) token.role = dbUser.role;
       }
       return token;
     },
