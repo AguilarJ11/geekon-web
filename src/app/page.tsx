@@ -163,6 +163,7 @@ export default function HomePage() {
         <style>{`
           @keyframes floatGon { 0%,100%{transform:translateY(0) rotate(-1deg)} 50%{transform:translateY(-18px) rotate(1deg)} }
           @keyframes floatEek { 0%,100%{transform:translateY(0) rotate(2deg)} 50%{transform:translateY(-12px) rotate(-2deg)} }
+          @keyframes floatGonInner { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
         `}</style>
       </section>
 
@@ -195,26 +196,26 @@ export default function HomePage() {
       ══════════════════════════════════════════════════ */}
       <section className="relative z-10 max-w-6xl mx-auto px-8 py-28">
 
-        <Reveal className="mb-3">
-          <p className="text-xs font-bold uppercase tracking-widest" style={{ color: "#7B2FFF" }}>
-            Lo que nos define
-          </p>
-        </Reveal>
-
-        <Reveal delay={80}>
-          <h2
-            className="font-black mb-5"
-            style={{ fontSize: "clamp(2rem, 5vw, 3.5rem)", letterSpacing: "-0.04em", lineHeight: 1.08, maxWidth: 600 }}
-          >
-            Más que<br />un evento.
-          </h2>
-        </Reveal>
-
-        <Reveal delay={160}>
-          <p style={{ color: "var(--dim)", fontSize: "1rem", lineHeight: 1.75, maxWidth: 520, marginBottom: "4rem" }}>
-            GeekOn! es una comunidad construida por y para los geeks de Uruguay. Libre, activa y apasionada todo el año.
-          </p>
-        </Reveal>
+        <div className="text-center max-w-2xl mx-auto mb-16">
+          <Reveal className="mb-3">
+            <p className="text-xs font-bold uppercase tracking-widest" style={{ color: "#7B2FFF" }}>
+              Lo que nos define
+            </p>
+          </Reveal>
+          <Reveal delay={80}>
+            <h2
+              className="font-black mb-5"
+              style={{ fontSize: "clamp(2rem, 5vw, 3.25rem)", letterSpacing: "-0.04em", lineHeight: 1.08 }}
+            >
+              Más que un evento.
+            </h2>
+          </Reveal>
+          <Reveal delay={160}>
+            <p style={{ color: "var(--dim)", fontSize: "1rem", lineHeight: 1.75 }}>
+              GeekOn! es una comunidad construida por y para los geeks de Uruguay. Libre, activa y apasionada todo el año.
+            </p>
+          </Reveal>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {PILLARS.map((p, i) => (
@@ -273,51 +274,76 @@ export default function HomePage() {
         </div>
 
         <div className="relative max-w-6xl mx-auto px-8">
-          <Reveal>
-            <span
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase mb-8"
-              style={{ background: "rgba(123,47,255,0.1)", border: "1px solid rgba(123,47,255,0.3)", color: "#7B2FFF" }}
-            >
-              <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#7B2FFF", display: "inline-block", animation: "glowPulse 2s ease-in-out infinite" }} />
-              Segunda Edición
-            </span>
-          </Reveal>
+          <div className="grid md:grid-cols-[1fr_auto] gap-8 items-center">
 
-          <Reveal delay={80}>
-            <h2
-              className="font-black mb-5"
-              style={{ fontSize: "clamp(2.5rem, 7vw, 5.5rem)", letterSpacing: "-0.045em", lineHeight: 1.04, maxWidth: 700 }}
-            >
-              <span style={{ color: "#7B2FFF" }}>GeekOn!</span>{" "}
-              <span style={{ color: "var(--text)" }}>2026</span>
-            </h2>
-          </Reveal>
+            {/* Texto */}
+            <div>
+              <Reveal>
+                <span
+                  className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase mb-8"
+                  style={{ background: "rgba(123,47,255,0.1)", border: "1px solid rgba(123,47,255,0.3)", color: "#7B2FFF" }}
+                >
+                  <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#7B2FFF", display: "inline-block", animation: "glowPulse 2s ease-in-out infinite" }} />
+                  Segunda Edición
+                </span>
+              </Reveal>
 
-          <Reveal delay={160}>
-            <p style={{ color: "var(--dim)", fontSize: "1.0625rem", lineHeight: 1.75, maxWidth: 520, marginBottom: "2.5rem" }}>
-              El evento geek más esperado de Uruguay regresa con más artistas, más stands, más cosplay y más experiencias para vivir junto a la comunidad.
-            </p>
-          </Reveal>
+              <Reveal delay={80}>
+                <h2
+                  className="font-black mb-5"
+                  style={{ fontSize: "clamp(2.5rem, 6vw, 5rem)", letterSpacing: "-0.045em", lineHeight: 1.04 }}
+                >
+                  <span style={{ color: "#7B2FFF" }}>GeekOn!</span>{" "}
+                  <span style={{ color: "var(--text)" }}>2026</span>
+                </h2>
+              </Reveal>
 
-          <Reveal delay={240}>
-            <div className="flex gap-3 flex-wrap">
-              <Link
-                href="/formularios/artista"
-                className="px-7 py-3.5 rounded-xl font-bold text-white text-sm transition-all hover:-translate-y-1 hover:shadow-[0_10px_32px_rgba(123,47,255,0.55)]"
-                style={{ background: "linear-gradient(135deg, #7B2FFF, #A855F7)", boxShadow: "0 4px 24px rgba(123,47,255,0.38)" }}
-              >
-                Participar
-              </Link>
-              <Link
-                href="/galeria"
-                className="px-7 py-3.5 rounded-xl font-bold text-sm transition-all hover:-translate-y-1 hover:bg-[rgba(255,255,255,0.04)]"
-                style={{ border: "1px solid rgba(255,255,255,0.12)", color: "var(--text)" }}
-              >
-                Ver edición anterior
-              </Link>
+              <Reveal delay={160}>
+                <p style={{ color: "var(--dim)", fontSize: "1.0625rem", lineHeight: 1.75, maxWidth: 480, marginBottom: "2.5rem" }}>
+                  El evento geek más esperado de Uruguay regresa con más artistas, más stands, más cosplay y más experiencias para vivir junto a la comunidad.
+                </p>
+              </Reveal>
+
+              <Reveal delay={240}>
+                <div className="flex gap-3 flex-wrap">
+                  <Link
+                    href="/formularios/artista"
+                    className="px-7 py-3.5 rounded-xl font-bold text-white text-sm transition-all hover:-translate-y-1 hover:shadow-[0_10px_32px_rgba(123,47,255,0.55)]"
+                    style={{ background: "linear-gradient(135deg, #7B2FFF, #A855F7)", boxShadow: "0 4px 24px rgba(123,47,255,0.38)" }}
+                  >
+                    Participar
+                  </Link>
+                  <Link
+                    href="/galeria"
+                    className="px-7 py-3.5 rounded-xl font-bold text-sm transition-all hover:-translate-y-1 hover:bg-[rgba(255,255,255,0.04)]"
+                    style={{ border: "1px solid rgba(255,255,255,0.12)", color: "var(--text)" }}
+                  >
+                    Ver edición anterior
+                  </Link>
+                </div>
+              </Reveal>
             </div>
-          </Reveal>
+
+            {/* Mascot Gon! */}
+            <Reveal direction="right" className="hidden md:flex justify-end items-end">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/mascots/gon.png"
+                alt="Gon!"
+                className="select-none pointer-events-none"
+                style={{
+                  height: "min(380px, 38vh)",
+                  filter: "drop-shadow(-12px 0 48px rgba(123,47,255,0.4))",
+                  animation: "floatGon 4s ease-in-out infinite",
+                }}
+              />
+            </Reveal>
+          </div>
         </div>
+
+        <style>{`
+          @keyframes floatGon { 0%,100%{transform:translateY(0) rotate(-1deg)} 50%{transform:translateY(-18px) rotate(1deg)} }
+        `}</style>
       </section>
 
       <div className="section-sep relative z-10" />
@@ -327,19 +353,17 @@ export default function HomePage() {
       ══════════════════════════════════════════════════ */}
       <section className="relative z-10 max-w-6xl mx-auto px-8 py-24">
 
-        <div className="flex items-end gap-5 mb-14">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/mascots/eek.png" alt="Eek!" className="h-20 select-none"
-            style={{ filter: "drop-shadow(0 0 16px rgba(0,229,255,0.32))" }}
-          />
-          <Reveal direction="left">
-            <div>
-              <p className="text-xs uppercase tracking-widest font-bold mb-1.5" style={{ color: "#00E5FF" }}>Eek! te guía</p>
-              <h2 className="text-3xl font-black mb-1" style={{ letterSpacing: "-0.03em" }}>Formularios de Participación</h2>
-              <p style={{ color: "var(--dim)", fontSize: "0.9rem" }}>Elegí tu categoría para la próxima edición.</p>
-            </div>
-          </Reveal>
-        </div>
+        <Reveal className="text-center mb-14">
+          <div className="flex flex-col items-center">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/mascots/eek.png" alt="Eek!" className="h-20 mb-4 select-none"
+              style={{ filter: "drop-shadow(0 0 16px rgba(0,229,255,0.35))" }}
+            />
+            <p className="text-xs uppercase tracking-widest font-bold mb-2" style={{ color: "#00E5FF" }}>Eek! te guía</p>
+            <h2 className="text-3xl font-black mb-2" style={{ letterSpacing: "-0.03em" }}>Formularios de Participación</h2>
+            <p style={{ color: "var(--dim)", fontSize: "0.9rem" }}>Elegí tu categoría para la próxima edición.</p>
+          </div>
+        </Reveal>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {FORM_CARDS.map((card, i) => (
@@ -357,19 +381,17 @@ export default function HomePage() {
       ══════════════════════════════════════════════════ */}
       <section className="relative z-10 max-w-6xl mx-auto px-8 py-24">
 
-        <div className="flex items-end gap-5 mb-14">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/mascots/gon.png" alt="Gon!" className="h-20 select-none"
-            style={{ filter: "drop-shadow(0 0 16px rgba(255,45,155,0.32))", transform: "scaleX(-1)" }}
-          />
-          <Reveal direction="left">
-            <div>
-              <p className="text-xs uppercase tracking-widest font-bold mb-1.5" style={{ color: "#FF2D9B" }}>Gon! te invita</p>
-              <h2 className="text-3xl font-black mb-1" style={{ letterSpacing: "-0.03em" }}>Comunidad GeekOn!</h2>
-              <p style={{ color: "var(--dim)", fontSize: "0.9rem" }}>Un lugar para quedarse. Activo todo el año.</p>
-            </div>
-          </Reveal>
-        </div>
+        <Reveal className="text-center mb-14">
+          <div className="flex flex-col items-center">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/mascots/gon.png" alt="Gon!" className="h-20 mb-4 select-none"
+              style={{ filter: "drop-shadow(0 0 16px rgba(255,45,155,0.35))", transform: "scaleX(-1)" }}
+            />
+            <p className="text-xs uppercase tracking-widest font-bold mb-2" style={{ color: "#FF2D9B" }}>Gon! te invita</p>
+            <h2 className="text-3xl font-black mb-2" style={{ letterSpacing: "-0.03em" }}>Comunidad GeekOn!</h2>
+            <p style={{ color: "var(--dim)", fontSize: "0.9rem" }}>Un lugar para quedarse. Activo todo el año.</p>
+          </div>
+        </Reveal>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {[
