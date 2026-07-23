@@ -1,6 +1,6 @@
 "use client";
 
-import { ButtonHTMLAttributes, ReactNode } from "react";
+import { ButtonHTMLAttributes, ReactNode, AnchorHTMLAttributes } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -37,6 +37,8 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;
   size?: Size;
   href?: string;
+  target?: AnchorHTMLAttributes<HTMLAnchorElement>["target"];
+  rel?: AnchorHTMLAttributes<HTMLAnchorElement>["rel"];
   children: ReactNode;
 }
 
@@ -45,14 +47,18 @@ export default function Button({
   size    = "md",
   className,
   href,
+  target,
+  rel,
   children,
   ...rest
 }: ButtonProps) {
   const cls = cn(BASE, VARIANTS[variant], SIZES[size], className);
 
   if (href) {
+    const isExternal = target === "_blank";
     return (
-      <Link href={href} className={cls}>
+      <Link href={href} className={cls} target={target}
+        rel={isExternal ? (rel ?? "noopener noreferrer") : rel}>
         {children}
       </Link>
     );
