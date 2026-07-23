@@ -22,9 +22,9 @@ Cada feature debe quedar funcionando y probada antes de pasar a la siguiente.
 ## Orden de implementación
 
 ### Fase 1 — Datos básicos del perfil (baja complejidad)
-- [ ] Campos de redes sociales (Instagram, Discord, TikTok, X/Twitter)
-- [ ] Campo de ciudad/zona (Uruguay)
-- [ ] Tags de intereses / fandoms favoritos (anime, cómics, gaming, cosplay,
+- [x] Campos de redes sociales (Instagram, Discord, TikTok, X/Twitter)
+- [x] Campo de ciudad/zona (Uruguay)
+- [x] Tags de intereses / fandoms favoritos (anime, cómics, gaming, cosplay,
       sci-fi, etc.), mostrados como chips en el perfil
 
 ### Fase 2 — Panel de postulaciones
