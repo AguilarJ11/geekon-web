@@ -44,11 +44,10 @@ export default function Navbar() {
       {/* Logo */}
       <Link
         href="/"
-        className="text-2xl font-black tracking-tight shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet/50 rounded"
+        className="shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet/50 rounded"
       >
-        <span className="text-violet">GEEK</span>
-        <span className="text-cyan">ON</span>
-        <span className="text-pink">!</span>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/geekon-logo.webp" alt="GeekOn!" className="h-14 w-auto" />
       </Link>
 
       {/* Desktop nav */}
