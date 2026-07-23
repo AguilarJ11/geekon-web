@@ -16,12 +16,46 @@ interface Field {
   options: string | null;
 }
 
+interface StandOption {
+  id: string;
+  label: string;
+  metraje: string;
+  precio: number;
+}
+
 interface Form {
   id: string;
   title: string;
   description: string | null;
   slug: string;
   fields: Field[];
+  standOptions: StandOption[];
+}
+
+const PRICE_FORMAT = new Intl.NumberFormat("es-UY", { style: "currency", currency: "UYU", maximumFractionDigits: 0 });
+
+function StandOptionCard({ option, selected, onSelect }: {
+  option: StandOption; selected: boolean; onSelect: () => void;
+}) {
+  return (
+    <label
+      className="flex items-center justify-between gap-3 rounded-xl px-4 py-3 cursor-pointer transition-colors"
+      style={{
+        background: selected ? "rgba(123,47,255,0.12)" : "rgba(255,255,255,0.03)",
+        border: `1px solid ${selected ? "rgba(123,47,255,0.5)" : "rgba(255,255,255,0.08)"}`,
+      }}
+    >
+      <div className="flex items-center gap-3">
+        <input type="radio" name="standOption" checked={selected} onChange={onSelect}
+          className="accent-violet" required />
+        <div>
+          <div className="text-sm font-semibold">{option.label}</div>
+          <div className="text-xs text-content/45">{option.metraje}</div>
+        </div>
+      </div>
+      <div className="text-sm font-bold text-violet shrink-0">{PRICE_FORMAT.format(option.precio)}</div>
+    </label>
+  );
 }
 
 function FormField({ field, value, onChange }: {
@@ -99,6 +133,7 @@ export default function PublicFormPage({ params }: { params: Promise<{ slug: str
   const [form, setForm] = useState<Form | null>(null);
   const [notFound, setNotFound] = useState(false);
   const [values, setValues] = useState<Record<string, string>>({});
+  const [standOptionId, setStandOptionId] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
@@ -122,7 +157,7 @@ export default function PublicFormPage({ params }: { params: Promise<{ slug: str
     const res = await fetch(`/api/forms/${slug}/submit`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(values),
+      body: JSON.stringify({ ...values, standOptionId }),
     });
     if (res.ok) {
       setSubmitted(true);
@@ -202,6 +237,25 @@ export default function PublicFormPage({ params }: { params: Promise<{ slug: str
           {error && (
             <div className="rounded-xl px-4 py-3 text-sm font-medium text-pink bg-pink/[0.08] border border-pink/[0.28]">
               {error}
+            </div>
+          )}
+
+          {form!.standOptions.length > 0 && (
+            <div>
+              <label className="block text-sm font-medium mb-2 text-content/75">
+                Tipo de stand
+                <span className="text-pink ml-1">*</span>
+              </label>
+              <div className="space-y-2">
+                {form!.standOptions.map(option => (
+                  <StandOptionCard
+                    key={option.id}
+                    option={option}
+                    selected={standOptionId === option.id}
+                    onSelect={() => setStandOptionId(option.id)}
+                  />
+                ))}
+              </div>
             </div>
           )}
 

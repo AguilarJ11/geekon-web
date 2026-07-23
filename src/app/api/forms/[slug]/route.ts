@@ -10,7 +10,10 @@ export async function GET(_: NextRequest, { params }: { params: Promise<{ slug: 
   const { slug } = await params;
   const form = await prisma.form.findUnique({
     where: { slug, isPublished: true },
-    include: { fields: { orderBy: { order: "asc" } } },
+    include: {
+      fields: { orderBy: { order: "asc" } },
+      standOptions: { orderBy: { order: "asc" } },
+    },
   });
   if (!form) return NextResponse.json({ error: "Not found" }, { status: 404 });
   return NextResponse.json(form);

@@ -9,7 +9,11 @@ export async function GET(_: NextRequest, { params }: { params: Promise<{ id: st
   if (!await requireFormAccess(id)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const form = await prisma.form.findUnique({
     where: { id },
-    include: { fields: { orderBy: { order: "asc" } }, owner: { select: { name: true, email: true } } },
+    include: {
+      fields: { orderBy: { order: "asc" } },
+      standOptions: { orderBy: { order: "asc" } },
+      owner: { select: { name: true, email: true } },
+    },
   });
   if (!form) return NextResponse.json({ error: "Not found" }, { status: 404 });
   return NextResponse.json(form);

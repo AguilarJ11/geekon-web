@@ -13,6 +13,12 @@ interface FormField {
 
 type Status = "PENDING" | "APPROVED" | "REJECTED";
 
+interface StandOptionSnapshot {
+  label: string;
+  metraje: string;
+  precio: number;
+}
+
 interface Submission {
   id: string;
   createdAt: string;
@@ -20,6 +26,13 @@ interface Submission {
   status: Status;
   isWinner: boolean;
   user: { id: string; name: string | null; email: string };
+}
+
+const PRICE_FORMAT = new Intl.NumberFormat("es-UY", { style: "currency", currency: "UYU", maximumFractionDigits: 0 });
+
+function standOptionOf(sub: Submission): StandOptionSnapshot | null {
+  const s = sub.data.standOption;
+  return s && typeof s === "object" ? (s as StandOptionSnapshot) : null;
 }
 
 const STATUS_LABEL: Record<Status, string> = {
@@ -96,6 +109,7 @@ export default function SubmissionsManager({
   );
 
   const sortedFields = [...data.form.fields].sort((a, b) => a.order - b.order);
+  const hasStand = data.submissions.some(s => standOptionOf(s));
 
   return (
     <div className="min-h-screen bg-navy px-6 pt-[94px] pb-12">
@@ -117,6 +131,9 @@ export default function SubmissionsManager({
               <thead>
                 <tr style={{ background: "#0A0726", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
                   <th className="text-left px-4 py-3 text-content/40 font-semibold text-xs uppercase tracking-wider">Usuario</th>
+                  {hasStand && (
+                    <th className="text-left px-4 py-3 text-content/40 font-semibold text-xs uppercase tracking-wider">Stand</th>
+                  )}
                   {sortedFields.map(f => (
                     <th key={f.id} className="text-left px-4 py-3 text-content/40 font-semibold text-xs uppercase tracking-wider">
                       {f.label}
@@ -138,6 +155,16 @@ export default function SubmissionsManager({
                       <div className="font-medium">{sub.user.name ?? "—"}</div>
                       <div className="text-xs text-content/40">{sub.user.email}</div>
                     </td>
+                    {hasStand && (
+                      <td className="px-4 py-3 text-content/70 whitespace-nowrap">
+                        {(() => {
+                          const stand = standOptionOf(sub);
+                          return stand
+                            ? <>{stand.label} <span className="text-content/40">· {stand.metraje} · {PRICE_FORMAT.format(stand.precio)}</span></>
+                            : "—";
+                        })()}
+                      </td>
+                    )}
                     {sortedFields.map(f => (
                       <td key={f.id} className="px-4 py-3 text-content/70 max-w-[200px] truncate">
                         {String(sub.data[f.id] ?? "—")}
@@ -220,6 +247,17 @@ export default function SubmissionsManager({
                 </button>
               )}
             </div>
+
+            {standOptionOf(selected) && (
+              <div className="mb-4 rounded-lg px-3 py-2.5 text-sm flex items-center justify-between"
+                style={{ background: "rgba(123,47,255,0.08)", border: "1px solid rgba(123,47,255,0.2)" }}>
+                <div>
+                  <div className="font-semibold">{standOptionOf(selected)!.label}</div>
+                  <div className="text-xs text-content/45">{standOptionOf(selected)!.metraje}</div>
+                </div>
+                <div className="font-bold text-violet">{PRICE_FORMAT.format(standOptionOf(selected)!.precio)}</div>
+              </div>
+            )}
 
             {selected.status === "APPROVED" && (
               <div className="mb-6">

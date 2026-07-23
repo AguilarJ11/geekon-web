@@ -7,6 +7,14 @@ import { FieldType } from "@prisma/client";
 import { FORM_CATEGORIES, categoryInfo } from "@/lib/form-categories";
 import { FieldRow, FIELD_TYPES, type Field } from "@/components/forms/FieldRow";
 
+interface StandOption {
+  id: string;
+  label: string;
+  metraje: string;
+  precio: number;
+  order: number;
+}
+
 interface Form {
   id: string;
   title: string;
@@ -16,6 +24,7 @@ interface Form {
   edition: string | null;
   isPublished: boolean;
   fields: Field[];
+  standOptions: StandOption[];
   owner: { name: string | null; email: string } | null;
 }
 
@@ -31,6 +40,11 @@ export default function EditFormPage({ params }: { params: Promise<{ id: string 
   const [ownerEmail, setOwnerEmail] = useState("");
   const [ownerSaving, setOwnerSaving] = useState(false);
   const [ownerError, setOwnerError] = useState("");
+  const [showAddStand, setShowAddStand] = useState(false);
+  const [standLabel, setStandLabel] = useState("");
+  const [standMetraje, setStandMetraje] = useState("");
+  const [standPrecio, setStandPrecio] = useState("");
+  const [standError, setStandError] = useState("");
 
   async function load() {
     const res = await fetch(`/api/admin/forms/${id}`);
@@ -160,6 +174,41 @@ export default function EditFormPage({ params }: { params: Promise<{ id: string 
     load();
   }
 
+  async function addStandOption(e: React.FormEvent) {
+    e.preventDefault();
+    setStandError("");
+    const res = await fetch(`/api/admin/forms/${id}/stand-options`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ label: standLabel, metraje: standMetraje, precio: standPrecio }),
+    });
+    if (res.ok) {
+      setStandLabel(""); setStandMetraje(""); setStandPrecio(""); setShowAddStand(false);
+      load();
+    } else {
+      const d = await res.json().catch(() => ({}));
+      setStandError(d.error ?? "Ocurrió un error");
+    }
+  }
+
+  async function updateStandOption(optionId: string, data: Partial<Pick<StandOption, "label" | "metraje" | "precio">>) {
+    setForm(f => f ? {
+      ...f,
+      standOptions: f.standOptions.map(o => o.id === optionId ? { ...o, ...data } : o),
+    } : f);
+    await fetch(`/api/admin/forms/${id}/stand-options/${optionId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+  }
+
+  async function deleteStandOption(optionId: string) {
+    if (!confirm("¿Eliminás este tipo de stand?")) return;
+    await fetch(`/api/admin/forms/${id}/stand-options/${optionId}`, { method: "DELETE" });
+    load();
+  }
+
   if (!form) return (
     <div className="min-h-screen bg-navy flex items-center justify-center text-content/40">
       Cargando...
@@ -280,6 +329,92 @@ export default function EditFormPage({ params }: { params: Promise<{ id: string 
             </div>
           </div>
         </div>
+
+        {/* Stand options (solo categoría Stand Comercial) */}
+        {form.category === "STAND" && (
+          <div className="mb-6">
+            <div className="mb-3 flex items-center justify-between">
+              <div>
+                <h2 className="font-semibold text-sm text-content/70">
+                  Tipos de stand ({form.standOptions.length})
+                </h2>
+                <p className="text-xs text-content/35 mt-0.5">
+                  Las opciones que va a poder elegir quien se postule, con su metraje y precio.
+                </p>
+              </div>
+              <Button size="sm" onClick={() => setShowAddStand(!showAddStand)}>
+                {showAddStand ? "Cancelar" : "+ Agregar stand"}
+              </Button>
+            </div>
+
+            {showAddStand && (
+              <form onSubmit={addStandOption} className="rounded-xl p-4 mb-3 space-y-3"
+                style={{ background: "rgba(123,47,255,0.07)", border: "1px solid rgba(123,47,255,0.2)" }}>
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <label className="block text-xs text-content/50 mb-1">Nombre</label>
+                    <input value={standLabel} onChange={e => setStandLabel(e.target.value)}
+                      className="input-premium text-sm py-2" placeholder="Ej: Stand chico" required />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-content/50 mb-1">Metraje</label>
+                    <input value={standMetraje} onChange={e => setStandMetraje(e.target.value)}
+                      className="input-premium text-sm py-2" placeholder="Ej: 2x2m" required />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-content/50 mb-1">Precio ($)</label>
+                    <input type="number" min="0" step="0.01" value={standPrecio}
+                      onChange={e => setStandPrecio(e.target.value)}
+                      className="input-premium text-sm py-2" placeholder="0" required />
+                  </div>
+                </div>
+                {standError && <p className="text-xs text-pink">{standError}</p>}
+                <div className="flex justify-end">
+                  <Button type="submit" size="sm">Agregar</Button>
+                </div>
+              </form>
+            )}
+
+            {form.standOptions.length === 0 ? (
+              <div className="text-center py-8 text-content/30 text-sm border border-dashed border-white/10 rounded-xl">
+                Sin tipos de stand todavía. Agregá el primero.
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {form.standOptions.map(option => (
+                  <div key={option.id} className="rounded-xl p-4 flex items-center gap-3"
+                    style={{ border: "1px solid rgba(255,255,255,0.08)", background: "#0A0726" }}>
+                    <input
+                      value={option.label}
+                      onChange={e => updateStandOption(option.id, { label: e.target.value })}
+                      className="input-premium text-sm py-2 flex-1"
+                      placeholder="Nombre"
+                    />
+                    <input
+                      value={option.metraje}
+                      onChange={e => updateStandOption(option.id, { metraje: e.target.value })}
+                      className="input-premium text-sm py-2 w-28"
+                      placeholder="Metraje"
+                    />
+                    <div className="relative w-32">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-content/40 text-sm">$</span>
+                      <input
+                        type="number" min="0" step="0.01"
+                        value={option.precio}
+                        onChange={e => updateStandOption(option.id, { precio: Number(e.target.value) })}
+                        className="input-premium text-sm py-2 pl-6"
+                      />
+                    </div>
+                    <button onClick={() => deleteStandOption(option.id)}
+                      className="text-xs text-pink/50 hover:text-pink transition-colors px-2 shrink-0">
+                      Eliminar
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Fields */}
         <div className="mb-4 flex items-center justify-between">

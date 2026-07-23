@@ -64,9 +64,27 @@ model Form {
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 
-  owner       User?            @relation("FormOwner", fields: [ownerId], references: [id], onDelete: SetNull)
-  fields      FormField[]
-  submissions FormSubmission[]
+  owner        User?            @relation("FormOwner", fields: [ownerId], references: [id], onDelete: SetNull)
+  fields       FormField[]
+  submissions  FormSubmission[]
+  standOptions StandOption[]
+}
+
+// Tipos de stand que un formulario de categoría STAND deja elegir al
+// postularse (ej. "Stand chico" · 2m² · $500). El precio y metraje se
+// congelan como snapshot en FormSubmission.data al enviar, para que
+// editar/borrar una opción no altere postulaciones ya hechas.
+model StandOption {
+  id      String @id @default(cuid())
+  formId  String
+  label   String
+  metraje String
+  precio  Float
+  order   Int    @default(0)
+
+  form Form @relation(fields: [formId], references: [id], onDelete: Cascade)
+
+  @@index([formId, order])
 }
 
 model FormField {
