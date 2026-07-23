@@ -91,6 +91,7 @@ body {
 .delay-400 { animation-delay: 0.40s; }
 .delay-500 { animation-delay: 0.50s; }
 .delay-600 { animation-delay: 0.60s; }
+.delay-700 { animation-delay: 0.70s; }
 
 /* ── Glass card ──────────────────────────────────────────── */
 .glass-card {
