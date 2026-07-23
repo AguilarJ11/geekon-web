@@ -101,17 +101,17 @@ export default function HomePage() {
           </Eyebrow>
 
           <h1
-            className="font-black leading-[1.0] text-content animate-fadeInUp delay-100"
-            style={{ fontSize: "clamp(3.5rem, 10vw, 7.5rem)", letterSpacing: "-0.05em", marginBottom: "1.75rem" }}
+            className="font-black leading-[1.05] text-content animate-fadeInUp delay-100"
+            style={{ fontSize: "clamp(2.25rem, 9vw, 7.5rem)", letterSpacing: "-0.05em", marginBottom: "1.75rem" }}
           >
-            La aventura geek<br />
+            La aventura geek{" "}
             <span className="text-violet" style={{ textShadow: "0 0 80px rgba(123,47,255,0.5)" }}>
               comienza acá.
             </span>
           </h1>
 
           <p
-            className="text-content/50 mx-auto animate-fadeInUp delay-200"
+            className="text-content/55 mx-auto animate-fadeInUp delay-200"
             style={{ fontSize: "1.125rem", lineHeight: 1.75, maxWidth: "460px", marginBottom: "2.75rem" }}
           >
             El evento geek más grande de Uruguay. Entrada libre, comunidad activa y experiencias únicas todo el año.
@@ -191,7 +191,7 @@ export default function HomePage() {
                 <h3 className="font-bold mb-3" style={{ fontSize: "1.0625rem", letterSpacing: "-0.02em" }}>
                   {f.title}
                 </h3>
-                <p className="text-content/45 text-sm" style={{ lineHeight: 1.75 }}>
+                <p className="text-content/55 text-sm" style={{ lineHeight: 1.75 }}>
                   {f.desc}
                 </p>
               </div>
@@ -298,7 +298,7 @@ export default function HomePage() {
       {/* ══════════════════════════════════════════════════
           COMUNIDAD — minimal
       ══════════════════════════════════════════════════ */}
-      <section className="relative z-10 max-w-6xl mx-auto px-8 pb-24 border-t border-white/[0.05] pt-16">
+      <section className="relative z-10 max-w-6xl mx-auto px-8 py-32 border-t border-white/[0.05]">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {[
             { title: "Foro General",       desc: "Hablá de anime, videojuegos, cosplay y todo lo geek con la comunidad.",  href: "/comunidad", btn: "Entrar al foro", color: "#7B2FFF" },
@@ -316,7 +316,7 @@ export default function HomePage() {
                 <h3 className="font-bold mb-3" style={{ fontSize: "1.0625rem", letterSpacing: "-0.02em" }}>
                   {c.title}
                 </h3>
-                <p className="text-sm text-content/45 mb-6" style={{ lineHeight: 1.75 }}>
+                <p className="text-sm text-content/55 mb-6" style={{ lineHeight: 1.75 }}>
                   {c.desc}
                 </p>
                 <a
@@ -352,9 +352,22 @@ export default function HomePage() {
           </div>
 
           {[
-            { title: "Participar", links: ["Artist Alley", "Stand Comercial", "Cosplay", "Actividades"] },
-            { title: "Comunidad",  links: ["Foro", "Galería", "Edición 2026"] },
-            { title: "GeekOn!",    links: ["Sobre nosotros", "Instagram", "Contacto"] },
+            { title: "Participar", links: [
+              { label: "Artist Alley",    href: "/formularios/artista"   },
+              { label: "Stand Comercial", href: "/formularios/stand"     },
+              { label: "Cosplay",         href: "/formularios/cosplay"   },
+              { label: "Actividades",     href: "/formularios/actividad" },
+            ]},
+            { title: "Comunidad", links: [
+              { label: "Foro",         href: "/comunidad" },
+              { label: "Galería",      href: "/galeria"   },
+              { label: "Edición 2026", href: "/galeria"   },
+            ]},
+            { title: "GeekOn!", links: [
+              { label: "Sobre nosotros", href: "#"                              },
+              { label: "Instagram",      href: "https://instagram.com/geekonuy" },
+              { label: "Contacto",       href: "#"                              },
+            ]},
           ].map((col) => (
             <div key={col.title}>
               <h4 className="text-xs font-bold uppercase tracking-widest mb-4 text-content/25">
@@ -362,9 +375,14 @@ export default function HomePage() {
               </h4>
               <ul className="space-y-2.5 list-none">
                 {col.links.map((l) => (
-                  <li key={l}>
-                    <a href="#" className="text-sm text-content/38 transition-colors hover:text-content">
-                      {l}
+                  <li key={l.label}>
+                    <a
+                      href={l.href}
+                      target={l.href.startsWith("http") ? "_blank" : undefined}
+                      rel={l.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                      className="text-sm text-content/55 transition-colors hover:text-content"
+                    >
+                      {l.label}
                     </a>
                   </li>
                 ))}

@@ -55,7 +55,7 @@ export default function FormCard({ icon, title, desc, href, color, glow, tag }: 
       <h3 className="text-base font-bold mb-2.5 leading-snug" style={{ letterSpacing: "-0.02em" }}>
         {title}
       </h3>
-      <p className="text-sm leading-relaxed mb-6" style={{ color: "rgba(234,230,255,0.45)", lineHeight: 1.65 }}>
+      <p className="text-sm leading-relaxed mb-6" style={{ color: "rgba(234,230,255,0.55)", lineHeight: 1.65 }}>
         {desc}
       </p>
 

@@ -35,6 +35,13 @@ export default function Reveal({
     const el = ref.current;
     if (!el) return;
 
+    // Respect prefers-reduced-motion — show immediately, skip animation
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      el.style.opacity   = "1";
+      el.style.transform = "translate(0,0)";
+      return;
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
