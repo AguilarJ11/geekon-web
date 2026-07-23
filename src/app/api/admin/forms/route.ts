@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 function slug(title: string) {
@@ -10,14 +9,6 @@ function slug(title: string) {
     .replace(/[̀-ͯ]/g, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
-}
-
-async function requireAdmin() {
-  const session = await getServerSession(authOptions);
-  if (!session?.user || (session.user as { role?: string }).role !== "ADMIN") {
-    return null;
-  }
-  return session;
 }
 
 export async function GET() {
@@ -40,7 +31,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Título requerido" }, { status: 400 });
   }
 
-  let baseSlug = slug(title);
+  const baseSlug = slug(title);
   let finalSlug = baseSlug;
   let i = 1;
   while (await prisma.form.findUnique({ where: { slug: finalSlug } })) {

@@ -1,5 +1,6 @@
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
+import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
 import type { NextAuthOptions } from "next-auth";
 
@@ -47,3 +48,9 @@ export const authOptions: NextAuthOptions = {
     },
   },
 };
+
+export async function requireAdmin() {
+  const session = await getServerSession(authOptions);
+  if (!session?.user || (session.user as { role?: string }).role !== "ADMIN") return null;
+  return session;
+}

@@ -7,6 +7,7 @@ import { BadgeCard, EmptyBadges, ActionCard, ACTIONS } from "./components";
 
 const ROLES: Record<string, { label: string; color: string; glow: string }> = {
   USER:             { label: "Miembro",              color: "#7B2FFF", glow: "rgba(123,47,255,0.45)" },
+  ADMIN:            { label: "Administrador",         color: "#F59E0B", glow: "rgba(245,158,11,0.5)"  },
   ARTIST:           { label: "Artista",               color: "#00E5FF", glow: "rgba(0,229,255,0.4)"   },
   COMMERCIAL_STAND: { label: "Stand Comercial",       color: "#FF2D9B", glow: "rgba(255,45,155,0.4)"  },
   STAFF_CM:         { label: "Community Manager",     color: "#F59E0B", glow: "rgba(245,158,11,0.4)"  },
