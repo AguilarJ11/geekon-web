@@ -123,6 +123,11 @@ model FormSubmission {
   isWinner  Boolean          @default(false)
   createdAt DateTime         @default(now())
 
+  // Marca cuándo se mandó el recordatorio por mail de cada vencimiento
+  // (Stand Comercial), para no volver a mandarlo todos los días.
+  depositReminderSentAt     DateTime?
+  fullPaymentReminderSentAt DateTime?
+
   form Form @relation(fields: [formId], references: [id], onDelete: Cascade)
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
