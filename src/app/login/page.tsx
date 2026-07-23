@@ -71,11 +71,8 @@ function LoginForm() {
       >
         {/* Logo */}
         <div className="text-center mb-8 animate-fadeInUp">
-          <div className="text-3xl font-black tracking-tight mb-2">
-            <span className="text-violet">GEEK</span>
-            <span className="text-cyan">ON</span>
-            <span className="text-pink">!</span>
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/geekon-logo.webp" alt="GeekOn!" className="h-16 w-auto mx-auto mb-2" />
           <p className="text-content/55 text-sm">
             {reason === "auth-required"
               ? "Iniciá sesión para continuar"

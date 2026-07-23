@@ -341,11 +341,8 @@ export default function HomePage() {
       <footer style={{ background: "rgba(3,1,16,0.98)", borderTop: "1px solid rgba(123,47,255,0.08)" }}>
         <div className="max-w-6xl mx-auto px-8 py-14 grid grid-cols-2 md:grid-cols-4 gap-10">
           <div className="col-span-2 md:col-span-1">
-            <div className="text-xl font-black mb-3 tracking-tight">
-              <span className="text-violet">GEEK</span>
-              <span className="text-cyan">ON</span>
-              <span className="text-pink">!</span>
-            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/geekon-logo.webp" alt="GeekOn!" className="h-9 w-auto mb-3" />
             <p className="text-sm leading-relaxed text-content/30">
               La comunidad geek más grande de Uruguay. Entrada siempre libre.
             </p>
