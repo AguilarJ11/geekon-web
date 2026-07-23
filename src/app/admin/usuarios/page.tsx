@@ -25,6 +25,7 @@ export default function AdminUsersPage() {
   const [q, setQ] = useState("");
   const [editing, setEditing] = useState<AdminUser | null>(null);
   const [editName, setEditName] = useState("");
+  const [editRole, setEditRole] = useState("USER");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -43,34 +44,14 @@ export default function AdminUsersPage() {
     return () => clearTimeout(t);
   }, [q, load]);
 
-  async function toggleRole(user: AdminUser) {
-    const nextRole = user.role === "ADMIN" ? "USER" : "ADMIN";
-    if (user.id === selfId && nextRole !== "ADMIN") {
-      if (!confirm("Te vas a quitar el rol de administrador a vos mismo. ¿Seguís?")) return;
-    }
-    setBusyId(user.id);
-    const res = await fetch(`/api/admin/users/${user.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ role: nextRole }),
-    });
-    if (res.ok) {
-      const updated = await res.json();
-      setUsers(list => list.map(u => u.id === user.id ? updated : u));
-    } else {
-      const d = await res.json().catch(() => ({}));
-      alert(d.error ?? "No se pudo cambiar el rol.");
-    }
-    setBusyId(null);
-  }
-
   function openEdit(user: AdminUser) {
     setEditing(user);
     setEditName(user.name ?? "");
+    setEditRole(user.role);
     setError("");
   }
 
-  async function saveName(e: React.FormEvent) {
+  async function saveUser(e: React.FormEvent) {
     e.preventDefault();
     if (!editing) return;
     setSaving(true);
@@ -78,7 +59,7 @@ export default function AdminUsersPage() {
     const res = await fetch(`/api/admin/users/${editing.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: editName }),
+      body: JSON.stringify({ name: editName, role: editRole }),
     });
     if (res.ok) {
       const updated = await res.json();
@@ -168,16 +149,8 @@ export default function AdminUsersPage() {
                 </div>
 
                 <div className="flex items-center gap-2 shrink-0">
-                  <Button variant="ghost" size="sm" onClick={() => openEdit(user)}>
+                  <Button variant="secondary" size="sm" onClick={() => openEdit(user)}>
                     Editar
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    disabled={busyId === user.id}
-                    onClick={() => toggleRole(user)}
-                  >
-                    {user.role === "ADMIN" ? "Quitar admin" : "Hacer admin"}
                   </Button>
                   <button
                     onClick={() => deleteUser(user)}
@@ -202,11 +175,22 @@ export default function AdminUsersPage() {
             style={{ background: "#0A0726", border: "1px solid rgba(123,47,255,0.25)" }}
             onClick={e => e.stopPropagation()}>
             <h2 className="text-xl font-bold mb-6">Editar usuario</h2>
-            <form onSubmit={saveName} className="space-y-4">
+            <form onSubmit={saveUser} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-1.5 text-content/65">Nombre</label>
                 <input value={editName} onChange={e => setEditName(e.target.value)}
                   className="input-premium" required />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1.5 text-content/65">Rol</label>
+                <select value={editRole} onChange={e => setEditRole(e.target.value)}
+                  className="input-premium" disabled={editing.id === selfId}>
+                  <option value="USER">Usuario</option>
+                  <option value="ADMIN">Administrador</option>
+                </select>
+                {editing.id === selfId && (
+                  <p className="text-xs text-content/35 mt-1.5">No podés cambiar tu propio rol.</p>
+                )}
               </div>
               <p className="text-xs text-content/35">{editing.email}</p>
               {error && <p className="text-xs text-pink">{error}</p>}
