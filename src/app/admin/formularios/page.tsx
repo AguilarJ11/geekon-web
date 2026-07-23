@@ -116,6 +116,11 @@ export default function AdminFormsPage() {
                   <p className="text-xs text-content/35 mt-1.5">
                     Al aprobar una postulación de esta categoría, el usuario recibe el título &quot;{categoryInfo(category).participantRole}&quot; en su perfil.
                   </p>
+                  {category === "STAND" && (
+                    <p className="text-xs text-cyan/70 mt-1">
+                      Se precargan 4 campos típicos de stand: nombre del emprendimiento, teléfono, descripción y redes sociales.
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1.5 text-content/65">Edición de GeekOn (opcional)</label>

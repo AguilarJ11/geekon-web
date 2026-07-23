@@ -3,6 +3,7 @@ import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { FORM_CATEGORIES, categoryInfo, participantBadgeName } from "@/lib/form-categories";
 import { awardBadge } from "@/lib/badges";
+import { DEFAULT_FIELDS } from "@/lib/default-fields";
 
 const VALID_CATEGORIES = FORM_CATEGORIES.map((c) => c.key);
 
@@ -65,6 +66,20 @@ export async function POST(req: NextRequest) {
       ownerId,
     },
   });
+
+  const defaultFields = DEFAULT_FIELDS[finalCategory as keyof typeof DEFAULT_FIELDS];
+  if (defaultFields?.length) {
+    await prisma.formField.createMany({
+      data: defaultFields.map((f, order) => ({
+        formId: form.id,
+        type: f.type,
+        label: f.label,
+        placeholder: f.placeholder ?? null,
+        required: f.required,
+        order,
+      })),
+    });
+  }
 
   if (ownerId) {
     const cat = categoryInfo(finalCategory);
