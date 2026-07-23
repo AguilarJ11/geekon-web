@@ -3,6 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import Stars from "@/components/Stars";
+import Button from "@/components/ui/Button";
 import { BadgeCard, EmptyBadges, ActionCard } from "./components";
 import { ACTIONS } from "./actions";
 
@@ -46,11 +47,17 @@ export default async function PerfilPage() {
         {/* ── Banner ─────────────────────────────────────────── */}
         <div style={{
           height: "260px",
-          background: "linear-gradient(135deg, #08052a 0%, #1a0844 45%, #0e0630 75%, #06031c 100%)",
+          background: user.banner
+            ? `center/cover no-repeat url(${user.banner})`
+            : "linear-gradient(135deg, #08052a 0%, #1a0844 45%, #0e0630 75%, #06031c 100%)",
           position: "relative",
           overflow: "hidden",
         }}>
+          {user.banner && (
+            <div style={{ position: "absolute", inset: 0, background: "rgba(5,3,26,0.3)" }} />
+          )}
           {/* Grid overlay */}
+          {!user.banner && (
           <div style={{
             position: "absolute", inset: 0,
             backgroundImage:
@@ -58,6 +65,7 @@ export default async function PerfilPage() {
               "linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)",
             backgroundSize: "48px 48px",
           }} />
+          )}
 
           {/* Orbs ambientales */}
           <div style={{
@@ -99,7 +107,9 @@ export default async function PerfilPage() {
           <div style={{
             width: "128px", height: "128px",
             borderRadius: "50%",
-            background: "linear-gradient(135deg, #7B2FFF 0%, #FF2D9B 100%)",
+            background: user.image
+              ? `center/cover no-repeat url(${user.image})`
+              : "linear-gradient(135deg, #7B2FFF 0%, #FF2D9B 100%)",
             display: "flex", alignItems: "center", justifyContent: "center",
             fontSize: "2.75rem", fontWeight: 900,
             letterSpacing: "-0.02em",
@@ -107,7 +117,7 @@ export default async function PerfilPage() {
             boxShadow: `0 0 0 1px ${role.color}30, 0 8px 48px ${role.glow}`,
             position: "relative",
           }}>
-            {initials}
+            {!user.image && initials}
           </div>
         </div>
 
@@ -151,9 +161,24 @@ export default async function PerfilPage() {
               {role.label}
             </span>
 
-            <p style={{ marginTop: "1.25rem", fontSize: "0.75rem", color: "rgba(234,230,255,0.3)" }}>
+            {user.bio && (
+              <p style={{
+                marginTop: "1.25rem", fontSize: "0.9rem", color: "rgba(234,230,255,0.65)",
+                maxWidth: "480px", marginLeft: "auto", marginRight: "auto", lineHeight: 1.5,
+              }}>
+                {user.bio}
+              </p>
+            )}
+
+            <p style={{ marginTop: "0.75rem", fontSize: "0.75rem", color: "rgba(234,230,255,0.3)" }}>
               Miembro desde {joinDate}
             </p>
+
+            <div style={{ marginTop: "1.25rem" }}>
+              <Button href="/perfil/editar" variant="secondary" size="sm">
+                Editar perfil
+              </Button>
+            </div>
           </div>
 
           {/* Separador */}
