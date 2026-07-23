@@ -79,3 +79,22 @@ export async function requireAdmin() {
   if (!session?.user || (session.user as { role?: string }).role !== "ADMIN") return null;
   return session;
 }
+
+/**
+ * Autoriza al admin global o al dueño asignado de un formulario puntual.
+ * El dueño puede administrar únicamente su propio formulario (contenido y
+ * postulaciones), no el resto del panel admin.
+ */
+export async function requireFormAccess(formId: string) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) return null;
+  const userId = (session.user as { id?: string }).id;
+  const role   = (session.user as { role?: string }).role;
+
+  if (role === "ADMIN") return { session, isAdmin: true as const };
+
+  const form = await prisma.form.findUnique({ where: { id: formId }, select: { ownerId: true } });
+  if (form?.ownerId && form.ownerId === userId) return { session, isAdmin: false as const };
+
+  return null;
+}

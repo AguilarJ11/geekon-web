@@ -1,0 +1,15 @@
+Siempre usar:
+
+Cards
+
+Grid
+
+Dark Mode
+
+Componentes reutilizables
+
+Botones consistentes
+
+Iconografía Lucide
+
+Tailwind

@@ -124,6 +124,28 @@ export default function Navbar() {
                     </svg>
                     Mi perfil
                   </Link>
+                  <Link
+                    href="/mis-formularios"
+                    className="flex items-center gap-2.5 px-4 py-3 text-sm text-content transition-colors hover:bg-violet/[0.12] focus-visible:outline-none focus-visible:bg-violet/[0.12]"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+                      <path d="M2.5 3.5h10M2.5 7.5h10M2.5 11.5h6" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+                    </svg>
+                    Mis formularios
+                  </Link>
+                  {(session.user as { role?: string })?.role === "ADMIN" && (
+                    <Link
+                      href="/admin/formularios"
+                      className="flex items-center gap-2.5 px-4 py-3 text-sm text-content transition-colors hover:bg-violet/[0.12] focus-visible:outline-none focus-visible:bg-violet/[0.12]"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+                        <path d="M7.5 1.5l6 2.5v3c0 3.5-2.5 6-6 6.5-3.5-.5-6-3-6-6.5v-3l6-2.5z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/>
+                      </svg>
+                      Panel admin
+                    </Link>
+                  )}
                   <button
                     onClick={() => { signOut(); setMenuOpen(false); }}
                     className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-pink transition-colors hover:bg-pink/[0.08] focus-visible:outline-none focus-visible:bg-pink/[0.08]"

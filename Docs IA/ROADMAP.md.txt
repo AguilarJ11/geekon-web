@@ -43,10 +43,38 @@ una vez enviada. El admin aprueba/rechaza desde
 /admin/formularios/[id]/respuestas.
 
 ### Fase 3 — Gamificación e identidad
-- [ ] Rol visible según participación (Cosplayer, Artista, Staff, Visitante)
-- [ ] Sistema de niveles / puntos de experiencia
-- [ ] Logros específicos (ej: "Primer cosplay", "Asistió a 3 ediciones")
-      conectados a la sección "Logros & Badges" ya existente
+- [x] Rol visible según participación (Cosplayer, Artista, Staff, Visitante)
+- [x] Sistema de niveles / puntos de experiencia
+- [x] Logros específicos conectados a la sección "Logros & Badges" ya existente
+
+Nota (2026-07-23): un usuario puede tener más de un rol visible a la vez
+(staff + participante + organizador), se muestran todos como fila de
+badges, no solo el de mayor prioridad.
+
+Se agregó el concepto de "dueño de formulario": el admin puede asignarle
+a cualquier usuario (por email) la propiedad de un formulario puntual
+(ej. "Torneo de Tekken" → Abstract Gaming). Ese dueño administra
+únicamente su propio formulario desde /mis-formularios (campos,
+publicar/despublicar, aprobar/rechazar postulaciones), sin acceso al
+resto del panel admin. Al asignarse como dueño recibe automáticamente
+un badge de organizador ligado a la categoría del formulario (ej.
+"Expositor / Taller", "Organizador de Torneo").
+
+Cada formulario tiene además un campo "edición" (texto libre, ej.
+"GeekOn 2026"). Las medallas por postulación aprobada son genéricas
+por categoría + edición (no por formulario específico): cualquier
+torneo de esa edición, sin importar la temática, otorga la misma
+medalla "Competidor — GeekOn 2026". Se agregó también un estado
+"ganador" (además de pendiente/aprobada/rechazada), marcable solo
+sobre postulaciones aprobadas, que otorga una medalla extra tipo
+"Ganador de Cosplay — GeekOn 2026".
+
+Nivel y XP se calculan al vuelo (no se persisten) a partir de
+postulaciones aprobadas y badges obtenidos: no hay tabla de puntos.
+
+Pendiente para más adelante (fuera de esta fase): logros basados en
+asistencia a ediciones pasadas del evento ("asistió a 3 ediciones")
+requeriría un sistema de check-in/asistencia que todavía no existe.
 
 ### Fase 4 — Social y pulido
 - [ ] Seguir / agregar a otros usuarios de la comunidad
@@ -60,3 +88,12 @@ una vez enviada. El admin aprueba/rechaza desde
   en producción.
 - Este documento se actualiza a medida que se completan features (marcar
   checkboxes) o se agregan nuevas ideas.
+
+## Ideas a futuro (sin prioridad definida)
+
+- Modo de edición visual para administradores: permitir arrastrar y
+  reposicionar assets/elementos de la página en tiempo real (tipo editor
+  de diseño). Requiere definir antes: qué elementos son editables, si los
+  cambios se ven en vivo para todos los visitantes o se aplican al
+  recargar, y qué mecanismo de rollback existe si algo se rompe. Evaluar
+  cuando las fases 1 a 4 del perfil estén completas.

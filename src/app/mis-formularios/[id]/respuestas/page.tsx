@@ -3,13 +3,13 @@
 import { use } from "react";
 import SubmissionsManager from "@/components/forms/SubmissionsManager";
 
-export default function SubmissionsPage({ params }: { params: Promise<{ id: string }> }) {
+export default function OwnedSubmissionsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   return (
     <SubmissionsManager
       formId={id}
-      backHref={`/admin/formularios/${id}/editar`}
-      notFoundHref="/admin/formularios"
+      backHref={`/mis-formularios/${id}/editar`}
+      notFoundHref="/mis-formularios"
     />
   );
 }

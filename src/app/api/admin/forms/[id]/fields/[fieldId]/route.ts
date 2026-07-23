@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/auth";
+import { requireFormAccess } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string; fieldId: string }> }
 ) {
-  if (!await requireAdmin()) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  const { fieldId } = await params;
+  const { id: formId, fieldId } = await params;
+  if (!await requireFormAccess(formId)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { label, placeholder, required, options, order } = await req.json();
 
   if (label !== undefined && !label.trim()) {
@@ -33,8 +33,8 @@ export async function DELETE(
   _: NextRequest,
   { params }: { params: Promise<{ id: string; fieldId: string }> }
 ) {
-  if (!await requireAdmin()) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  const { fieldId } = await params;
+  const { id: formId, fieldId } = await params;
+  if (!await requireFormAccess(formId)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   await prisma.formField.delete({ where: { id: fieldId } });
   return NextResponse.json({ ok: true });
 }

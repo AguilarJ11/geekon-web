@@ -116,9 +116,9 @@ const STATUS_STYLE: Record<SubmissionStatus, { color: string; background: string
 };
 
 export function ApplicationCard({
-  title, createdAt, status,
+  title, edition, createdAt, status, isWinner,
 }: {
-  title: string; createdAt: Date; status: SubmissionStatus;
+  title: string; edition: string | null; createdAt: Date; status: SubmissionStatus; isWinner: boolean;
 }) {
   return (
     <div style={{
@@ -129,21 +129,35 @@ export function ApplicationCard({
       borderRadius: "14px",
     }}>
       <div>
-        <p style={{ fontSize: "0.85rem", fontWeight: 700 }}>{title}</p>
+        <p style={{ fontSize: "0.85rem", fontWeight: 700 }}>
+          {title}{edition && <span style={{ color: "rgba(234,230,255,0.4)", fontWeight: 500 }}> · {edition}</span>}
+        </p>
         <p style={{ fontSize: "0.7rem", color: "rgba(234,230,255,0.35)", marginTop: "2px" }}>
           Enviada el {new Date(createdAt).toLocaleDateString("es-UY", { day: "2-digit", month: "short", year: "numeric" })}
         </p>
       </div>
-      <span
-        style={{
-          padding: "4px 12px", borderRadius: "100px",
-          fontSize: "0.72rem", fontWeight: 700, whiteSpace: "nowrap",
-          border: "1px solid",
-          ...STATUS_STYLE[status],
-        }}
-      >
-        {STATUS_LABEL[status]}
-      </span>
+      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        {isWinner && (
+          <span style={{
+            padding: "4px 12px", borderRadius: "100px",
+            fontSize: "0.72rem", fontWeight: 700, whiteSpace: "nowrap",
+            border: "1px solid rgba(245,158,11,0.35)",
+            color: "#F59E0B", background: "rgba(245,158,11,0.12)",
+          }}>
+            🏆 Ganador
+          </span>
+        )}
+        <span
+          style={{
+            padding: "4px 12px", borderRadius: "100px",
+            fontSize: "0.72rem", fontWeight: 700, whiteSpace: "nowrap",
+            border: "1px solid",
+            ...STATUS_STYLE[status],
+          }}
+        >
+          {STATUS_LABEL[status]}
+        </span>
+      </div>
     </div>
   );
 }

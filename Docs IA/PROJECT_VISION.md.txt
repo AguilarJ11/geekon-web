@@ -1,0 +1,23 @@
+# Visión del proyecto
+
+GeekOn no es únicamente la web de un evento.
+
+El objetivo es convertirse en la comunidad geek más importante de Uruguay.
+
+El evento anual es una consecuencia de la comunidad, no el producto principal.
+
+La plataforma debe permitir que la comunidad interactúe durante todo el año.
+
+Las funcionalidades futuras incluyen:
+
+- perfiles
+- publicaciones
+- comunidades
+- grupos
+- eventos
+- torneos
+- artistas
+- cosplay
+- marketplace
+- badges
+- gamificación

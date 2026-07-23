@@ -1,0 +1,38 @@
+# AI Context
+
+Este proyecto está siendo desarrollado junto a Claude Code.
+
+Antes de comenzar cualquier tarea:
+
+1. Leer PROJECT_RULES.md.
+2. Leer ARCHITECTURE.md.
+3. Leer la feature correspondiente dentro de /features.
+4. Revisar DECISIONS.md si la tarea puede estar relacionada con una decisión previa.
+
+## Objetivo
+
+Priorizar consistencia por encima de velocidad.
+
+Es preferible reutilizar un componente existente antes que crear uno nuevo.
+
+## Nunca hacer
+
+- Romper funcionalidades existentes.
+- Refactorizar archivos no relacionados.
+- Cambiar el diseño general sin que sea solicitado.
+- Crear modelos duplicados.
+- Duplicar componentes.
+- Inventar lógica si ya existe una solución implementada.
+
+## Siempre hacer
+
+- Reutilizar componentes.
+- Reutilizar hooks.
+- Reutilizar servicios.
+- Reutilizar esquemas.
+- Mantener el mismo estilo visual.
+- Mantener el mismo patrón arquitectónico.
+
+Cada feature debe quedar completamente funcional antes de comenzar otra.
+
+Si existe una decisión documentada en DECISIONS.md, esa decisión tiene prioridad sobre cualquier sugerencia.

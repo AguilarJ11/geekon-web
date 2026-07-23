@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/auth";
+import { requireFormAccess } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { FieldType } from "@prisma/client";
 
 const VALID_TYPES: FieldType[] = ["TEXT","TEXTAREA","EMAIL","PHONE","NUMBER","SELECT","RADIO","CHECKBOX","DATE"];
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  if (!await requireAdmin()) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { id: formId } = await params;
+  if (!await requireFormAccess(formId)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { type, label, placeholder, required, options } = await req.json();
 
   if (!label?.trim()) return NextResponse.json({ error: "Label requerido" }, { status: 400 });

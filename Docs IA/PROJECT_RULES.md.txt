@@ -1,0 +1,13 @@
+# Formularios
+
+Todas las postulaciones funcionan mediante Form Builder.
+
+Nunca existen categorías hardcodeadas.
+
+El administrador crea formularios libremente.
+
+Los usuarios únicamente responden formularios publicados.
+
+No crear lógica especial para "Artista", "Stand", "Cosplay", etc.
+
+Todo debe pasar por el mismo sistema.

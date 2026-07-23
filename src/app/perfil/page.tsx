@@ -14,16 +14,16 @@ const SOCIAL_LINKS: Record<string, (handle: string) => { href: string; icon: str
   twitter:   (h) => ({ href: `https://x.com/${h.replace(/^@/, "")}`, icon: "✕", label: h }),
 };
 
-const ROLES: Record<string, { label: string; color: string; glow: string }> = {
-  ADMIN:            { label: "Administrador",         color: "#F59E0B", glow: "rgba(245,158,11,0.5)"  },
-  ARTIST:           { label: "Artista",               color: "#00E5FF", glow: "rgba(0,229,255,0.4)"   },
-  COMMERCIAL_STAND: { label: "Stand Comercial",       color: "#FF2D9B", glow: "rgba(255,45,155,0.4)"  },
-  STAFF_CM:         { label: "Community Manager",     color: "#F59E0B", glow: "rgba(245,158,11,0.4)"  },
-  STAFF_STANDS:     { label: "Staff de Stands",       color: "#10B981", glow: "rgba(16,185,129,0.4)"  },
-  COORDINATOR:      { label: "Coordinador",           color: "#FF2D9B", glow: "rgba(255,45,155,0.5)"  },
+const STAFF_ROLES: Record<string, { label: string; color: string }> = {
+  ADMIN:            { label: "Administrador",     color: "#F59E0B" },
+  ARTIST:           { label: "Artista",           color: "#00E5FF" },
+  COMMERCIAL_STAND: { label: "Stand Comercial",   color: "#FF2D9B" },
+  STAFF_CM:         { label: "Community Manager", color: "#F59E0B" },
+  STAFF_STANDS:     { label: "Staff de Stands",   color: "#10B981" },
+  COORDINATOR:      { label: "Coordinador",       color: "#FF2D9B" },
 };
 
-const VISITANTE = { label: "Visitante", color: "#8B8B9E", glow: "rgba(139,139,158,0.3)" };
+const VISITANTE = { label: "Visitante", color: "#8B8B9E" };
 
 const XP_PER_LEVEL = 300;
 
@@ -36,9 +36,10 @@ export default async function PerfilPage() {
     include: {
       badges: { include: { badge: true }, orderBy: { awardedAt: "desc" } },
       submissions: {
-        include: { form: { select: { title: true, category: true } } },
+        include: { form: { select: { title: true, category: true, edition: true } } },
         orderBy: { createdAt: "desc" },
       },
+      ownedForms: { select: { category: true } },
     },
   });
 
@@ -51,20 +52,25 @@ export default async function PerfilPage() {
     select: { id: true, title: true, description: true, slug: true, category: true },
   });
 
-  const approvedCategories = new Set(
-    user.submissions.filter((s) => s.status === "APPROVED").map((s) => s.form.category)
-  );
-  const participationRole = FORM_CATEGORIES.find((c) => approvedCategories.has(c.key));
+  const approvedSubmissions = user.submissions.filter((s) => s.status === "APPROVED");
+  const approvedCategories = new Set(approvedSubmissions.map((s) => s.form.category));
+  const ownedCategories = new Set(user.ownedForms.map((f) => f.category));
 
-  const role = ROLES[user.role]
-    ?? (participationRole
-      ? { label: participationRole.roleLabel, color: participationRole.color, glow: `${participationRole.color}73` }
-      : VISITANTE);
+  // Un usuario puede tener varios roles a la vez (staff + participante + organizador).
+  const roles: { label: string; color: string }[] = [];
+  if (STAFF_ROLES[user.role]) roles.push(STAFF_ROLES[user.role]);
+  for (const cat of FORM_CATEGORIES) {
+    if (approvedCategories.has(cat.key)) roles.push({ label: cat.participantRole, color: cat.color });
+  }
+  for (const cat of FORM_CATEGORIES) {
+    if (ownedCategories.has(cat.key)) roles.push({ label: cat.ownerRole, color: cat.color });
+  }
+  if (roles.length === 0) roles.push(VISITANTE);
 
-  const approvedCount = approvedCategories.size > 0
-    ? user.submissions.filter((s) => s.status === "APPROVED").length
-    : 0;
-  const xp = approvedCount * 100 + user.badges.length * 50;
+  const primaryRole = roles[0];
+  const glow = `${primaryRole.color}73`;
+
+  const xp = approvedSubmissions.length * 100 + user.badges.length * 50;
   const level = Math.floor(xp / XP_PER_LEVEL) + 1;
   const xpProgress = ((xp % XP_PER_LEVEL) / XP_PER_LEVEL) * 100;
 
@@ -136,7 +142,7 @@ export default async function PerfilPage() {
             position: "absolute",
             width: "148px", height: "148px",
             borderRadius: "50%",
-            background: `radial-gradient(circle, ${role.glow} 0%, transparent 70%)`,
+            background: `radial-gradient(circle, ${glow} 0%, transparent 70%)`,
             animation: "glowPulse 3s ease-in-out infinite",
           }} />
 
@@ -151,7 +157,7 @@ export default async function PerfilPage() {
             fontSize: "2.75rem", fontWeight: 900,
             letterSpacing: "-0.02em",
             border: "4px solid #05031A",
-            boxShadow: `0 0 0 1px ${role.color}30, 0 8px 48px ${role.glow}`,
+            boxShadow: `0 0 0 1px ${primaryRole.color}30, 0 8px 48px ${glow}`,
             position: "relative",
           }}>
             {!user.image && initials}
@@ -176,27 +182,33 @@ export default async function PerfilPage() {
               {user.email}
             </p>
 
-            {/* Badge de rol */}
-            <span style={{
-              display: "inline-flex", alignItems: "center", gap: "8px",
-              padding: "6px 16px",
-              borderRadius: "100px",
-              fontSize: "0.7rem", fontWeight: 700,
-              letterSpacing: "0.08em", textTransform: "uppercase",
-              background: `${role.color}12`,
-              border: `1px solid ${role.color}35`,
-              color: role.color,
-              boxShadow: `0 0 18px ${role.glow}`,
+            {/* Badges de rol (puede tener más de uno) */}
+            <div style={{
+              display: "flex", justifyContent: "center", flexWrap: "wrap", gap: "8px",
             }}>
-              <span style={{
-                display: "inline-block",
-                width: "6px", height: "6px",
-                borderRadius: "50%",
-                background: role.color,
-                boxShadow: `0 0 8px ${role.color}`,
-              }} />
-              {role.label}
-            </span>
+              {roles.map((r) => (
+                <span key={r.label} style={{
+                  display: "inline-flex", alignItems: "center", gap: "8px",
+                  padding: "6px 16px",
+                  borderRadius: "100px",
+                  fontSize: "0.7rem", fontWeight: 700,
+                  letterSpacing: "0.08em", textTransform: "uppercase",
+                  background: `${r.color}12`,
+                  border: `1px solid ${r.color}35`,
+                  color: r.color,
+                  boxShadow: `0 0 18px ${r.color}73`,
+                }}>
+                  <span style={{
+                    display: "inline-block",
+                    width: "6px", height: "6px",
+                    borderRadius: "50%",
+                    background: r.color,
+                    boxShadow: `0 0 8px ${r.color}`,
+                  }} />
+                  {r.label}
+                </span>
+              ))}
+            </div>
 
             {/* Nivel / XP */}
             <div style={{ maxWidth: "220px", margin: "0.85rem auto 0" }}>
@@ -365,8 +377,10 @@ export default async function PerfilPage() {
                     <ApplicationCard
                       key={sub.id}
                       title={sub.form.title}
+                      edition={sub.form.edition}
                       createdAt={sub.createdAt}
                       status={sub.status}
+                      isWinner={sub.isWinner}
                     />
                   ))}
                 </div>

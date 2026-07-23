@@ -4,7 +4,7 @@ import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
 import { FieldType } from "@prisma/client";
-import { FORM_CATEGORIES, categoryInfo } from "@/lib/form-categories";
+import { categoryInfo } from "@/lib/form-categories";
 import { FieldRow, FIELD_TYPES, type Field } from "@/components/forms/FieldRow";
 
 interface Form {
@@ -16,10 +16,9 @@ interface Form {
   edition: string | null;
   isPublished: boolean;
   fields: Field[];
-  owner: { name: string | null; email: string } | null;
 }
 
-export default function EditFormPage({ params }: { params: Promise<{ id: string }> }) {
+export default function EditOwnedFormPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
   const [form, setForm] = useState<Form | null>(null);
@@ -28,14 +27,11 @@ export default function EditFormPage({ params }: { params: Promise<{ id: string 
   const [addLabel, setAddLabel] = useState("");
   const [addRequired, setAddRequired] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
-  const [ownerEmail, setOwnerEmail] = useState("");
-  const [ownerSaving, setOwnerSaving] = useState(false);
-  const [ownerError, setOwnerError] = useState("");
 
   async function load() {
     const res = await fetch(`/api/admin/forms/${id}`);
     if (res.ok) setForm(await res.json());
-    else router.push("/admin/formularios");
+    else router.push("/mis-formularios");
   }
 
   useEffect(() => { load(); }, [id]);
@@ -49,48 +45,6 @@ export default function EditFormPage({ params }: { params: Promise<{ id: string 
       body: JSON.stringify({ title: form.title, description: form.description }),
     });
     setSaving(false);
-  }
-
-  async function saveCategory(category: string) {
-    setForm(f => f ? { ...f, category } : f);
-    await fetch(`/api/admin/forms/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ category }),
-    });
-  }
-
-  async function saveEdition() {
-    if (!form) return;
-    await fetch(`/api/admin/forms/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ edition: form.edition }),
-    });
-  }
-
-  async function assignOwner(e: React.FormEvent) {
-    e.preventDefault();
-    setOwnerSaving(true);
-    setOwnerError("");
-    const res = await fetch(`/api/admin/forms/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ownerEmail }),
-    });
-    setOwnerSaving(false);
-    if (!res.ok) { const d = await res.json().catch(() => ({})); setOwnerError(d.error ?? "Error"); return; }
-    setOwnerEmail("");
-    load();
-  }
-
-  async function removeOwner() {
-    await fetch(`/api/admin/forms/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ownerEmail: "" }),
-    });
-    load();
   }
 
   async function togglePublish() {
@@ -118,7 +72,6 @@ export default function EditFormPage({ params }: { params: Promise<{ id: string 
   }
 
   async function updateField(fieldId: string, data: Partial<Field>) {
-    // Optimistic update
     setForm(f => f ? {
       ...f,
       fields: f.fields.map(field => field.id === fieldId ? { ...field, ...data } : field)
@@ -144,7 +97,6 @@ export default function EditFormPage({ params }: { params: Promise<{ id: string 
     const target = fields[idx + dir];
     if (!target) return;
 
-    // Swap orders
     await Promise.all([
       fetch(`/api/admin/forms/${id}/fields/${fieldId}`, {
         method: "PATCH",
@@ -167,19 +119,24 @@ export default function EditFormPage({ params }: { params: Promise<{ id: string 
   );
 
   const sortedFields = [...form.fields].sort((a, b) => a.order - b.order);
+  const cat = categoryInfo(form.category);
 
   return (
     <div className="min-h-screen bg-navy px-6 py-12">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="flex items-center gap-3 mb-8">
-          <Button variant="ghost" size="sm" href="/admin/formularios">← Volver</Button>
+          <Button variant="ghost" size="sm" href="/mis-formularios">← Volver</Button>
           <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border ${
             form.isPublished
               ? "text-cyan bg-cyan/10 border-cyan/20"
               : "text-content/40 bg-white/5 border-white/10"
           }`}>
             {form.isPublished ? "Publicado" : "Borrador"}
+          </span>
+          <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border"
+            style={{ color: cat.color, background: `${cat.color}18`, borderColor: `${cat.color}40` }}>
+            {cat.icon} {cat.label}{form.edition ? ` · ${form.edition}` : ""}
           </span>
         </div>
 
@@ -206,63 +163,6 @@ export default function EditFormPage({ params }: { params: Promise<{ id: string 
               placeholder="Descripción pública del formulario..."
             />
           </div>
-          <div>
-            <label className="block text-xs text-content/50 mb-1.5">Categoría</label>
-            <select
-              value={form.category}
-              onChange={e => saveCategory(e.target.value)}
-              className="input-premium text-sm py-2"
-            >
-              {FORM_CATEGORIES.map(c => (
-                <option key={c.key} value={c.key}>{c.icon} {c.label}</option>
-              ))}
-            </select>
-            <p className="text-xs text-content/35 mt-1.5">
-              Al aprobar una postulación acá, el usuario recibe el título &quot;{categoryInfo(form.category).participantRole}&quot;.
-            </p>
-          </div>
-
-          <div>
-            <label className="block text-xs text-content/50 mb-1.5">Edición de GeekOn</label>
-            <input
-              value={form.edition ?? ""}
-              onChange={e => setForm(f => f ? { ...f, edition: e.target.value } : f)}
-              onBlur={saveEdition}
-              className="input-premium text-sm py-2"
-              placeholder="Ej: GeekOn 2026"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs text-content/50 mb-1.5">Organizador / dueño del formulario</label>
-            {form.owner ? (
-              <div className="flex items-center justify-between rounded-lg px-3 py-2 text-sm"
-                style={{ background: "rgba(123,47,255,0.08)", border: "1px solid rgba(123,47,255,0.2)" }}>
-                <span>{form.owner.name ?? form.owner.email} <span className="text-content/40">({form.owner.email})</span></span>
-                <button onClick={removeOwner} className="text-xs text-pink/70 hover:text-pink transition-colors">Quitar</button>
-              </div>
-            ) : (
-              <form onSubmit={assignOwner} className="flex gap-2">
-                <input
-                  type="email"
-                  value={ownerEmail}
-                  onChange={e => setOwnerEmail(e.target.value)}
-                  className="input-premium text-sm py-2 flex-1"
-                  placeholder="email@delusuario.com"
-                  required
-                />
-                <Button type="submit" size="sm" disabled={ownerSaving}>
-                  {ownerSaving ? "Asignando..." : "Asignar"}
-                </Button>
-              </form>
-            )}
-            {ownerError && <p className="text-xs text-pink mt-1.5">{ownerError}</p>}
-            <p className="text-xs text-content/35 mt-1.5">
-              El dueño puede editar este formulario y aprobar sus postulaciones sin acceso al resto del panel admin.
-              Recibe automáticamente el título &quot;{categoryInfo(form.category).ownerRole}&quot;.
-            </p>
-          </div>
-
           <div className="flex items-center justify-between pt-1">
             <span className="text-xs text-content/40">/formularios/{form.slug}</span>
             <div className="flex gap-2">
@@ -291,7 +191,6 @@ export default function EditFormPage({ params }: { params: Promise<{ id: string 
           </Button>
         </div>
 
-        {/* Add field form */}
         {showAdd && (
           <form onSubmit={addField} className="rounded-xl p-4 mb-3 space-y-3"
             style={{ background: "rgba(123,47,255,0.07)", border: "1px solid rgba(123,47,255,0.2)" }}>

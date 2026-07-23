@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 
-const PRIVATE_ROUTES = ["/perfil", "/formularios", "/dashboard"];
+const PRIVATE_ROUTES = ["/perfil", "/formularios", "/dashboard", "/mis-formularios"];
 const ADMIN_ROUTES   = ["/admin"];
 
 export async function proxy(req: NextRequest) {

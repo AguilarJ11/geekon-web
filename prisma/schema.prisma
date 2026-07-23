@@ -28,6 +28,7 @@ model User {
 
   badges      UserBadge[]
   submissions FormSubmission[]
+  ownedForms  Form[]           @relation("FormOwner")
 }
 
 enum FieldType {
@@ -57,10 +58,13 @@ model Form {
   description String?
   slug        String       @unique
   category    FormCategory @default(OTRO)
+  edition     String?
+  ownerId     String?
   isPublished Boolean      @default(false)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 
+  owner       User?            @relation("FormOwner", fields: [ownerId], references: [id], onDelete: SetNull)
   fields      FormField[]
   submissions FormSubmission[]
 }
@@ -92,6 +96,7 @@ model FormSubmission {
   userId    String
   data      Json
   status    SubmissionStatus @default(PENDING)
+  isWinner  Boolean          @default(false)
   createdAt DateTime         @default(now())
 
   form Form @relation(fields: [formId], references: [id], onDelete: Cascade)

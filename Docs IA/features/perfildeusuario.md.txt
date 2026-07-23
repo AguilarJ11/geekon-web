@@ -1,0 +1,301 @@
+Perfil de usuario
+Objetivo
+
+El perfil representa la identidad del usuario dentro de la comunidad GeekOn.
+
+Debe permitir que cada persona pueda mostrar sus intereses, participación, logros y actividad dentro de la plataforma.
+
+La página principal del perfil se encuentra en:
+
+/perfil
+/perfil/editar
+Estado actual
+
+Actualmente el perfil incluye:
+
+Avatar
+Banner
+Nombre visible
+Biografía de hasta 280 caracteres
+Ciudad o zona de Uruguay
+Redes sociales
+Intereses y fandoms
+Medallas o Logros
+Badge de Rol
+Fecha de ingreso
+Rol asignado
+Panel de postulaciones
+Datos editables
+
+El usuario puede modificar:
+
+Avatar
+Banner
+Nombre visible
+Biografía
+Ciudad o zona
+Instagram
+Discord
+TikTok
+X/Twitter
+Intereses y fandoms favoritos
+Privacidad
+Intereses
+
+Los intereses se muestran como chips dentro del perfil.
+
+Ejemplos:
+
+Anime
+Manga
+Cómics
+Gaming
+Cosplay
+TCG
+Rol
+Ciencia ficción
+Fantasía
+Cine
+Series
+
+La implementación debe permitir agregar nuevos intereses sin modificar la estructura principal del perfil.
+
+No asumir que la lista actual será definitiva.
+
+
+
+
+Postulaciones
+
+El perfil contiene una sección de postulaciones.
+
+Las postulaciones no utilizan categorías hardcodeadas.
+
+El administrador crea formularios desde:
+
+/admin/formularios
+
+Cuando un formulario está publicado, puede aparecer como una postulación disponible para el usuario.
+
+El perfil debe mostrar:
+
+Formularios publicados disponibles
+Formularios que el usuario todavía no respondió
+Formularios ya enviados
+Estado de cada postulación
+
+Estados posibles:
+
+Pendiente
+Aprobada
+Rechazada
+
+Nunca crear lógica específica basada en nombres como:
+
+Artista
+Stand Comercial
+Concurso de Cosplay
+Torneo de TCG
+Torneo de Videojuegos
+
+Todos deben funcionar mediante el mismo sistema de formularios.
+
+Roles
+
+IMPLEMENTADO (2026-07-23). El perfil muestra una fila de badges de rol,
+no uno solo — un usuario puede tener varios a la vez:
+
+1. Rol de staff (si `user.role` es ADMIN/STAFF_CM/STAFF_STANDS/COORDINATOR).
+2. Un rol de "participante" por cada categoría de formulario en la que
+   tenga al menos una postulación APROBADA (ej. Cosplayer, Artista,
+   Competidor, Comerciante, Asistente).
+3. Un rol de "organizador" por cada formulario del que sea dueño
+   (ownerId), derivado de la categoría de ese formulario (ej.
+   "Organizador de Torneo", "Expositor / Taller").
+
+Si no tiene ninguno de los anteriores, se muestra "Visitante".
+
+La fuente de datos explícita es el campo `Form.category` (enum fijo:
+ARTE, STAND, COSPLAY, TORNEO, ACTIVIDAD, OTRO), elegido por el admin al
+crear el formulario — nunca se infiere del título/nombre del
+formulario. Ver `src/lib/form-categories.ts` (catálogo con
+participantRole y ownerRole por categoría) y `src/app/perfil/page.tsx`
+(cálculo de `roles`).
+
+Dueño de formulario: el admin puede asignarle a cualquier usuario (por
+email) la propiedad de un formulario puntual desde
+/admin/formularios/[id]/editar. Ese dueño administra su propio
+formulario desde /mis-formularios (fuera del panel admin), sin acceso a
+otros formularios. Ver `requireFormAccess()` en `src/lib/auth.ts`.
+
+Gamificación
+
+El perfil tiene preparada una sección llamada:
+
+Logros & Badges
+
+Actualmente esta sección puede existir visualmente sin una lógica completa detrás.
+
+Las funcionalidades futuras incluyen:
+
+Puntos de experiencia
+Niveles
+Logros
+Badges
+Progreso de logros
+Reconocimientos por participación
+
+Ejemplos de logros:
+
+Primer cosplay
+Primera postulación aprobada
+Participó en una edición de GeekOn
+Participó en tres ediciones
+Completó su perfil
+Asistió a una actividad
+Participó en un torneo
+
+La lógica de gamificación debe implementarse de forma progresiva.
+
+No implementar niveles, experiencia y logros en un mismo cambio salvo que la tarea lo solicite expresamente.
+
+Portfolio y galería
+
+En el futuro, artistas y cosplayers podrán tener una galería personal.
+
+La galería podría incluir:
+
+Imágenes
+Título
+Descripción
+Fecha
+Categoría
+Enlaces externos
+
+Antes de implementarla se debe definir:
+
+Cantidad máxima de imágenes
+Peso máximo de los archivos
+Formatos permitidos
+Moderación
+Orden manual o automático
+Privacidad
+Almacenamiento utilizado
+
+No comenzar esta funcionalidad sin resolver estos puntos.
+
+Sistema social
+
+Está previsto permitir que los usuarios puedan seguir a otros miembros de la comunidad.
+
+Antes de implementarlo se debe definir si el sistema será:
+
+Seguidores
+Amigos con aceptación mutua
+Contactos
+Una combinación de los anteriores
+
+No asumir automáticamente que seguir y agregar como amigo son la misma funcionalidad.
+
+Privacidad
+
+En el futuro, el perfil podrá ser:
+
+Público
+Visible solamente para usuarios registrados
+Privado
+
+La privacidad deberá aplicarse también a las secciones internas del perfil.
+
+Ejemplos:
+
+Redes sociales
+Galería
+Historial de participación
+Logros
+Lista de seguidores
+
+No implementar únicamente un selector visual. Las restricciones deben validarse también desde el backend.
+
+Historial de participación
+
+El perfil podrá mostrar las ediciones de GeekOn en las que participó el usuario.
+
+Una participación puede tener:
+
+Edición
+Año
+Tipo de participación
+Rol
+Actividad relacionada
+Estado
+Badge asociado
+
+Ejemplos:
+
+Visitante
+Artista
+Cosplayer
+Expositor
+Staff
+Participante de torneo
+Participante de una actividad
+
+El historial no debe depender solamente de texto ingresado manualmente por el usuario.
+
+Siempre que sea posible debe relacionarse con datos reales de la plataforma.
+
+Reglas de implementación
+
+Cada funcionalidad debe implementarse de manera individual.
+
+Antes de modificar el perfil:
+
+Revisar los componentes existentes.
+Revisar el modelo de usuario.
+Revisar las APIs y acciones existentes.
+Revisar si existe una solución reutilizable.
+Evitar duplicar componentes o esquemas.
+
+Nunca:
+
+Rehacer toda la página por una funcionalidad pequeña.
+Cambiar estilos que no estén relacionados con la tarea.
+Eliminar campos existentes sin una instrucción explícita.
+Hardcodear tipos de postulaciones.
+Crear roles basados únicamente en nombres de formularios.
+Implementar varias fases del roadmap en un mismo cambio.
+Introducir datos de ejemplo en producción.
+
+Siempre:
+
+Mantener compatibilidad con los perfiles existentes.
+Validar los datos tanto en frontend como en backend.
+Mantener el diseño responsive.
+Contemplar estados de carga, error y vacío.
+Probar que el usuario solo pueda editar su propio perfil.
+Documentar las decisiones nuevas.
+Actualizar el roadmap al completar una funcionalidad.
+Sistema de roles según participación — RESUELTO (2026-07-23)
+
+Qué roles existen inicialmente: ver catálogo en src/lib/form-categories.ts
+(uno participante y uno organizador por categoría) + roles de staff
+existentes (ADMIN/STAFF_CM/STAFF_STANDS/COORDINATOR).
+
+Un usuario puede tener varios roles: sí, se muestran todos como fila de
+badges en /perfil.
+
+Quién asigna los roles: se derivan automáticamente — el rol de
+participante sale de tener una postulación APROBADA en esa categoría; el
+rol de organizador sale de ser dueño (ownerId) de un formulario de esa
+categoría. Nadie los asigna a mano.
+
+Si afectan permisos o son solo visuales: mixto. El rol de organizador SÍ
+afecta permisos reales (acceso a /mis-formularios/[id] para ese
+formulario puntual, vía requireFormAccess()). Los demás son solo
+visuales en el perfil.
+
+Relación con postulaciones aprobadas: directa — ver "Roles" más arriba.
+
+Próxima funcionalidad: Fase 4 del roadmap (seguir/agregar amigos,
+portfolio, privacidad, historial de ediciones).

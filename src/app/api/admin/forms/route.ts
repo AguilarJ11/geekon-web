@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { FORM_CATEGORIES } from "@/lib/form-categories";
+import { FORM_CATEGORIES, categoryInfo, participantBadgeName } from "@/lib/form-categories";
+import { awardBadge } from "@/lib/badges";
 
 const VALID_CATEGORIES = FORM_CATEGORIES.map((c) => c.key);
 
@@ -29,12 +30,19 @@ export async function POST(req: NextRequest) {
   if (!await requireAdmin()) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  const { title, description, category } = await req.json();
+  const { title, description, category, edition, ownerEmail } = await req.json();
   if (!title?.trim()) {
     return NextResponse.json({ error: "Título requerido" }, { status: 400 });
   }
   if (category && !VALID_CATEGORIES.includes(category)) {
     return NextResponse.json({ error: "Categoría inválida" }, { status: 400 });
+  }
+
+  let ownerId: string | null = null;
+  if (ownerEmail?.trim()) {
+    const owner = await prisma.user.findUnique({ where: { email: ownerEmail.trim() } });
+    if (!owner) return NextResponse.json({ error: "No existe ningún usuario con ese email" }, { status: 400 });
+    ownerId = owner.id;
   }
 
   const baseSlug = slug(title);
@@ -44,13 +52,29 @@ export async function POST(req: NextRequest) {
     finalSlug = `${baseSlug}-${i++}`;
   }
 
+  const finalCategory = category || "OTRO";
+  const finalEdition = edition?.trim() || null;
+
   const form = await prisma.form.create({
     data: {
       title: title.trim(),
       description: description?.trim() || null,
       slug: finalSlug,
-      category: category || "OTRO",
+      category: finalCategory,
+      edition: finalEdition,
+      ownerId,
     },
   });
+
+  if (ownerId) {
+    const cat = categoryInfo(finalCategory);
+    await awardBadge(
+      ownerId,
+      participantBadgeName(cat.ownerRole, finalEdition),
+      `Organizador/a de "${form.title}"`,
+      cat.icon
+    );
+  }
+
   return NextResponse.json(form, { status: 201 });
 }

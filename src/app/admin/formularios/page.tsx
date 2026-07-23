@@ -24,6 +24,9 @@ export default function AdminFormsPage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState<string>("OTRO");
+  const [edition, setEdition] = useState("");
+  const [ownerEmail, setOwnerEmail] = useState("");
+  const [createError, setCreateError] = useState("");
   const [showNew, setShowNew] = useState(false);
 
   async function load() {
@@ -37,15 +40,19 @@ export default function AdminFormsPage() {
   async function create(e: React.FormEvent) {
     e.preventDefault();
     setCreating(true);
+    setCreateError("");
     const res = await fetch("/api/admin/forms", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, description, category }),
+      body: JSON.stringify({ title, description, category, edition, ownerEmail }),
     });
     if (res.ok) {
       const form = await res.json();
-      setTitle(""); setDescription(""); setCategory("OTRO"); setShowNew(false);
+      setTitle(""); setDescription(""); setCategory("OTRO"); setEdition(""); setOwnerEmail(""); setShowNew(false);
       window.location.href = `/admin/formularios/${form.id}/editar`;
+    } else {
+      const d = await res.json().catch(() => ({}));
+      setCreateError(d.error ?? "Ocurrió un error");
     }
     setCreating(false);
   }
@@ -104,9 +111,28 @@ export default function AdminFormsPage() {
                     ))}
                   </select>
                   <p className="text-xs text-content/35 mt-1.5">
-                    Al aprobar una postulación de esta categoría, el usuario recibe el título &quot;{categoryInfo(category).roleLabel}&quot; en su perfil.
+                    Al aprobar una postulación de esta categoría, el usuario recibe el título &quot;{categoryInfo(category).participantRole}&quot; en su perfil.
                   </p>
                 </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1.5 text-content/65">Edición de GeekOn (opcional)</label>
+                  <input value={edition} onChange={e => setEdition(e.target.value)}
+                    className="input-premium" placeholder="Ej: GeekOn 2026" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1.5 text-content/65">
+                    Organizador / dueño (opcional)
+                  </label>
+                  <input type="email" value={ownerEmail} onChange={e => setOwnerEmail(e.target.value)}
+                    className="input-premium" placeholder="email@delusuario.com" />
+                  <p className="text-xs text-content/35 mt-1.5">
+                    Si asignás un dueño, va a poder administrar este formulario y aprobar sus postulaciones
+                    sin acceso al resto del panel admin.
+                  </p>
+                </div>
+                {createError && (
+                  <p className="text-xs text-pink">{createError}</p>
+                )}
                 <div className="flex gap-3 pt-2">
                   <Button type="submit" disabled={creating} size="md" className="flex-1 justify-center">
                     {creating ? "Creando..." : "Crear y editar"}
@@ -150,7 +176,7 @@ export default function AdminFormsPage() {
                         background: `${categoryInfo(form.category).color}18`,
                         borderColor: `${categoryInfo(form.category).color}40`,
                       }}>
-                      {categoryInfo(form.category).icon} {categoryInfo(form.category).roleLabel}
+                      {categoryInfo(form.category).icon} {categoryInfo(form.category).participantRole}
                     </span>
                   </div>
                   <div className="text-xs text-content/40 flex gap-3">
