@@ -28,10 +28,19 @@ Cada feature debe quedar funcionando y probada antes de pasar a la siguiente.
       sci-fi, etc.), mostrados como chips en el perfil
 
 ### Fase 2 — Panel de postulaciones
-- [ ] Vista "Mis postulaciones" que muestre el estado (pendiente / aprobada /
-      rechazada) de las postulaciones enviadas a Artista, Stand Comercial,
-      Concurso Cosplay y Actividad
-- [ ] Conectar esta vista con los formularios/backend ya existentes
+- [x] Vista "Mis postulaciones" que muestre el estado (pendiente / aprobada /
+      rechazada) de las postulaciones enviadas
+- [x] Conectar esta vista con los formularios/backend ya existentes
+
+Nota (2026-07-23): se decidió NO hardcodear categorías fijas (Artista, Stand,
+Cosplay, etc.) en el código. El admin crea cada postulación como un
+formulario real desde /admin/formularios (form builder ya existente) con
+el nombre que quiera (Stand Comercial, Concurso de Cosplay, Torneo de
+TCG, Torneo de Videojuegos, Pasarela de Cosplay...), y recién ahí queda
+disponible para que los usuarios se postulen. /perfil lista automáticamente
+los formularios publicados a los que el usuario no se postuló, y su estado
+una vez enviada. El admin aprueba/rechaza desde
+/admin/formularios/[id]/respuestas.
 
 ### Fase 3 — Gamificación e identidad
 - [ ] Rol visible según participación (Cosplayer, Artista, Staff, Visitante)
