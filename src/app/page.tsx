@@ -1,9 +1,9 @@
 import Stars from "@/components/Stars";
 import Reveal from "@/components/Reveal";
-import AnimatedCounter from "@/components/AnimatedCounter";
 import FormCard from "@/app/components/FormCard";
 import Button from "@/components/ui/Button";
 import Eyebrow from "@/components/ui/Eyebrow";
+import StatsTicker from "@/components/StatsTicker";
 
 /* ── Feature icons ──────────────────────────────────────── */
 
@@ -40,13 +40,6 @@ function IconSpark() {
 import type { ReactElement } from "react";
 type Feature = { Icon: () => ReactElement; color: string; title: string; desc: string };
 
-const STATS = [
-  { raw: 4000, suffix: "+", label: "Seguidores"  },
-  { raw: 35,   suffix: "+", label: "Artistas"    },
-  { raw: 15,   suffix: "+", label: "Stands"      },
-  { raw: 2,    suffix: "",  label: "Ediciones"   },
-  { raw: 100,  suffix: "%", label: "Entrada libre" },
-];
 
 const FEATURES: Feature[] = [
   {
@@ -150,22 +143,9 @@ export default function HomePage() {
       </section>
 
       {/* ══════════════════════════════════════════════════
-          STATS
+          STATS — cinta animada
       ══════════════════════════════════════════════════ */}
-      <div className="border-y border-violet/10 bg-surface/40">
-        <div className="max-w-5xl mx-auto px-8 py-10 grid grid-cols-2 md:grid-cols-5 gap-8 text-center">
-          {STATS.map((s) => (
-            <div key={s.label}>
-              <div className="text-3xl font-black text-violet mb-1">
-                <AnimatedCounter value={s.raw} suffix={s.suffix} />
-              </div>
-              <div className="text-[11px] uppercase tracking-widest font-medium text-content/35">
-                {s.label}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      <StatsTicker />
 
       {/* ══════════════════════════════════════════════════
           FEATURES — iconos SVG, tarjetas limpias

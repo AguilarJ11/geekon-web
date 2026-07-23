@@ -60,6 +60,11 @@ body {
   50%       { opacity: 1; }
 }
 
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
 @keyframes bounceDown {
   0%, 100% { transform: translateY(0); opacity: 0.5; }
   50%       { transform: translateY(8px); opacity: 1; }
