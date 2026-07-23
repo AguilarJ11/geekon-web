@@ -1,0 +1,53 @@
+# GeekOn! — Roadmap de Perfil de Usuario
+
+## Contexto
+GeekOn es la web de la comunidad geek de Uruguay. Ya existe una página de
+perfil de usuario (`/perfil` y `/perfil/editar`) con los siguientes campos
+y secciones implementadas:
+
+- Avatar y banner
+- Nombre
+- Bio (280 caracteres)
+- Badge de rol "Miembro"
+- Fecha de ingreso ("Miembro desde...")
+- Sección "Logros & Badges" (UI lista, sin lógica de badges todavía)
+- Accesos para postularse a: Artista, Stand Comercial, Concurso Cosplay,
+  Actividad
+
+## Objetivo
+Ir extendiendo el perfil de usuario con nuevas funcionalidades, implementadas
+de a una por vez (no todas juntas), en el orden de prioridad definido abajo.
+Cada feature debe quedar funcionando y probada antes de pasar a la siguiente.
+
+## Orden de implementación
+
+### Fase 1 — Datos básicos del perfil (baja complejidad)
+- [ ] Campos de redes sociales (Instagram, Discord, TikTok, X/Twitter)
+- [ ] Campo de ciudad/zona (Uruguay)
+- [ ] Tags de intereses / fandoms favoritos (anime, cómics, gaming, cosplay,
+      sci-fi, etc.), mostrados como chips en el perfil
+
+### Fase 2 — Panel de postulaciones
+- [ ] Vista "Mis postulaciones" que muestre el estado (pendiente / aprobada /
+      rechazada) de las postulaciones enviadas a Artista, Stand Comercial,
+      Concurso Cosplay y Actividad
+- [ ] Conectar esta vista con los formularios/backend ya existentes
+
+### Fase 3 — Gamificación e identidad
+- [ ] Rol visible según participación (Cosplayer, Artista, Staff, Visitante)
+- [ ] Sistema de niveles / puntos de experiencia
+- [ ] Logros específicos (ej: "Primer cosplay", "Asistió a 3 ediciones")
+      conectados a la sección "Logros & Badges" ya existente
+
+### Fase 4 — Social y pulido
+- [ ] Seguir / agregar a otros usuarios de la comunidad
+- [ ] Mini portfolio o galería personal (para artistas y cosplayers)
+- [ ] Configuración de privacidad del perfil (público / solo comunidad)
+- [ ] Historial de ediciones de GeekOn en las que participó
+
+## Notas de trabajo
+- Cada fase se desarrolla feature por feature, no en bloque.
+- Antes de arrancar una fase nueva, confirmar que la anterior está probada
+  en producción.
+- Este documento se actualiza a medida que se completan features (marcar
+  checkboxes) o se agregan nuevas ideas.

@@ -18,6 +18,12 @@ export default async function EditarPerfilPage() {
         bio: user.bio ?? "",
         image: user.image,
         banner: user.banner,
+        city: user.city ?? "",
+        instagram: user.instagram ?? "",
+        discord: user.discord ?? "",
+        tiktok: user.tiktok ?? "",
+        twitter: user.twitter ?? "",
+        interests: user.interests,
       }}
     />
   );

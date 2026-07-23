@@ -4,12 +4,19 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Button from "@/components/ui/Button";
+import { INTEREST_CATALOG, URUGUAY_DEPARTMENTS } from "@/lib/profile-catalog";
 
 interface Initial {
   name: string;
   bio: string;
   image: string | null;
   banner: string | null;
+  city: string;
+  instagram: string;
+  discord: string;
+  tiktok: string;
+  twitter: string;
+  interests: string[];
 }
 
 export default function EditProfileForm({ initial }: { initial: Initial }) {
@@ -17,10 +24,24 @@ export default function EditProfileForm({ initial }: { initial: Initial }) {
 
   const [name, setName] = useState(initial.name);
   const [bio, setBio] = useState(initial.bio);
+  const [city, setCity] = useState(initial.city);
+  const [instagram, setInstagram] = useState(initial.instagram);
+  const [discord, setDiscord] = useState(initial.discord);
+  const [tiktok, setTiktok] = useState(initial.tiktok);
+  const [twitter, setTwitter] = useState(initial.twitter);
+  const [interests, setInterests] = useState<string[]>(initial.interests);
   const [avatarPreview, setAvatarPreview] = useState(initial.image);
   const [bannerPreview, setBannerPreview] = useState(initial.banner);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  function toggleInterest(key: string) {
+    setInterests((prev) =>
+      prev.includes(key)
+        ? prev.filter((k) => k !== key)
+        : prev.length >= 8 ? prev : [...prev, key]
+    );
+  }
 
   const avatarFile = useRef<File | null>(null);
   const bannerFile = useRef<File | null>(null);
@@ -49,6 +70,13 @@ export default function EditProfileForm({ initial }: { initial: Initial }) {
     const form = new FormData();
     form.set("name", name);
     form.set("bio", bio);
+    form.set("city", city);
+    form.set("instagram", instagram);
+    form.set("discord", discord);
+    form.set("tiktok", tiktok);
+    form.set("twitter", twitter);
+    form.set("interestsTouched", "1");
+    interests.forEach((i) => form.append("interests", i));
     if (avatarFile.current) form.set("avatar", avatarFile.current);
     if (bannerFile.current) form.set("banner", bannerFile.current);
 
@@ -168,6 +196,97 @@ export default function EditProfileForm({ initial }: { initial: Initial }) {
                 className="input-premium resize-none"
                 placeholder="Contanos algo sobre vos..."
               />
+            </div>
+
+            <div>
+              <label htmlFor="edit-city" className="block text-sm font-medium mb-2 text-content/65">Ciudad / Departamento</label>
+              <select
+                id="edit-city"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                className="input-premium"
+              >
+                <option value="">Sin especificar</option>
+                {URUGUAY_DEPARTMENTS.map((d) => (
+                  <option key={d} value={d}>{d}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <p className="block text-sm font-medium mb-2 text-content/65">Redes sociales</p>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg shrink-0" aria-hidden="true">📷</span>
+                  <input
+                    type="text"
+                    value={instagram}
+                    onChange={(e) => setInstagram(e.target.value)}
+                    maxLength={80}
+                    className="input-premium"
+                    placeholder="Instagram"
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-lg shrink-0" aria-hidden="true">🎮</span>
+                  <input
+                    type="text"
+                    value={discord}
+                    onChange={(e) => setDiscord(e.target.value)}
+                    maxLength={80}
+                    className="input-premium"
+                    placeholder="Discord"
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-lg shrink-0" aria-hidden="true">🎵</span>
+                  <input
+                    type="text"
+                    value={tiktok}
+                    onChange={(e) => setTiktok(e.target.value)}
+                    maxLength={80}
+                    className="input-premium"
+                    placeholder="TikTok"
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-lg shrink-0" aria-hidden="true">✕</span>
+                  <input
+                    type="text"
+                    value={twitter}
+                    onChange={(e) => setTwitter(e.target.value)}
+                    maxLength={80}
+                    className="input-premium"
+                    placeholder="X / Twitter"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <p className="block text-sm font-medium mb-2 text-content/65">
+                Intereses / fandoms <span className="text-content/35 font-normal">({interests.length}/8)</span>
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {INTEREST_CATALOG.map((tag) => {
+                  const active = interests.includes(tag.key);
+                  return (
+                    <button
+                      key={tag.key}
+                      type="button"
+                      onClick={() => toggleInterest(tag.key)}
+                      className={
+                        active
+                          ? "flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-medium border transition-colors bg-violet/20 border-violet/50 text-content"
+                          : "flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-medium border transition-colors bg-white/[0.02] border-white/12 text-content/55 hover:border-white/25 hover:text-content"
+                      }
+                    >
+                      <span aria-hidden="true">{tag.icon}</span>
+                      {tag.label}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             <div className="flex gap-3 pt-2">

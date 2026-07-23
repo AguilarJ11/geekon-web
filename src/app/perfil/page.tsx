@@ -6,6 +6,13 @@ import Stars from "@/components/Stars";
 import Button from "@/components/ui/Button";
 import { BadgeCard, EmptyBadges, ActionCard } from "./components";
 import { ACTIONS } from "./actions";
+import { INTEREST_CATALOG } from "@/lib/profile-catalog";
+
+const SOCIAL_LINKS: Record<string, (handle: string) => { href: string; icon: string; label: string }> = {
+  instagram: (h) => ({ href: `https://instagram.com/${h.replace(/^@/, "")}`, icon: "📷", label: h }),
+  tiktok:    (h) => ({ href: `https://tiktok.com/@${h.replace(/^@/, "")}`, icon: "🎵", label: h }),
+  twitter:   (h) => ({ href: `https://x.com/${h.replace(/^@/, "")}`, icon: "✕", label: h }),
+};
 
 const ROLES: Record<string, { label: string; color: string; glow: string }> = {
   USER:             { label: "Miembro",              color: "#7B2FFF", glow: "rgba(123,47,255,0.45)" },
@@ -170,7 +177,78 @@ export default async function PerfilPage() {
               </p>
             )}
 
-            <p style={{ marginTop: "0.75rem", fontSize: "0.75rem", color: "rgba(234,230,255,0.3)" }}>
+            {user.city && (
+              <p style={{ marginTop: "0.75rem", fontSize: "0.8rem", color: "rgba(234,230,255,0.45)" }}>
+                📍 {user.city}, Uruguay
+              </p>
+            )}
+
+            {(user.instagram || user.discord || user.tiktok || user.twitter) && (
+              <div style={{
+                display: "flex", justifyContent: "center", flexWrap: "wrap",
+                gap: "10px", marginTop: "1rem",
+              }}>
+                {(["instagram", "tiktok", "twitter"] as const).map((key) => {
+                  const value = user[key];
+                  if (!value) return null;
+                  const social = SOCIAL_LINKS[key](value);
+                  return (
+                    <a
+                      key={key}
+                      href={social.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        display: "inline-flex", alignItems: "center", gap: "6px",
+                        padding: "5px 12px", borderRadius: "100px",
+                        fontSize: "0.75rem", color: "rgba(234,230,255,0.6)",
+                        border: "1px solid rgba(255,255,255,0.1)",
+                        background: "rgba(255,255,255,0.02)",
+                        textDecoration: "none",
+                      }}
+                    >
+                      <span aria-hidden="true">{social.icon}</span>{social.label}
+                    </a>
+                  );
+                })}
+                {user.discord && (
+                  <span style={{
+                    display: "inline-flex", alignItems: "center", gap: "6px",
+                    padding: "5px 12px", borderRadius: "100px",
+                    fontSize: "0.75rem", color: "rgba(234,230,255,0.6)",
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    background: "rgba(255,255,255,0.02)",
+                  }}>
+                    <span aria-hidden="true">🎮</span>{user.discord}
+                  </span>
+                )}
+              </div>
+            )}
+
+            {user.interests.length > 0 && (
+              <div style={{
+                display: "flex", justifyContent: "center", flexWrap: "wrap",
+                gap: "8px", marginTop: "1rem",
+              }}>
+                {user.interests.map((key: string) => {
+                  const tag = INTEREST_CATALOG.find((t) => t.key === key);
+                  if (!tag) return null;
+                  return (
+                    <span key={key} style={{
+                      display: "inline-flex", alignItems: "center", gap: "5px",
+                      padding: "5px 12px", borderRadius: "100px",
+                      fontSize: "0.75rem", fontWeight: 600,
+                      color: "#7B2FFF", background: "rgba(123,47,255,0.1)",
+                      border: "1px solid rgba(123,47,255,0.25)",
+                    }}>
+                      <span aria-hidden="true">{tag.icon}</span>{tag.label}
+                    </span>
+                  );
+                })}
+              </div>
+            )}
+
+            <p style={{ marginTop: "1rem", fontSize: "0.75rem", color: "rgba(234,230,255,0.3)" }}>
               Miembro desde {joinDate}
             </p>
 
