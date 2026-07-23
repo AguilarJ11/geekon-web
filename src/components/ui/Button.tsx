@@ -8,7 +8,7 @@ type Variant = "primary" | "secondary" | "ghost";
 type Size    = "sm" | "md" | "lg";
 
 const BASE =
-  "inline-flex items-center justify-center font-semibold leading-none select-none " +
+  "inline-flex items-center justify-center font-semibold select-none " +
   "transition-all duration-200 " +
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet/50 " +
   "focus-visible:ring-offset-2 focus-visible:ring-offset-navy " +
