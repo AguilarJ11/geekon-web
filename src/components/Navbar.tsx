@@ -159,14 +159,9 @@ export default function Navbar() {
             )}
           </div>
         ) : (
-          <>
-            <Button href="/login" variant="secondary" className="hidden sm:inline-flex">
-              Iniciar sesión
-            </Button>
-            <Button href="/register">
-              Registrarse
-            </Button>
-          </>
+          <Button href="/login">
+            Iniciar sesión
+          </Button>
         )}
 
         {/* Mobile hamburger */}
@@ -201,12 +196,9 @@ export default function Navbar() {
               </li>
             ))}
             {!session && (
-              <li className="pt-2 flex gap-2">
-                <Button href="/login" variant="secondary" size="sm" className="flex-1 justify-center">
+              <li className="pt-2">
+                <Button href="/login" size="sm" className="w-full justify-center">
                   Iniciar sesión
-                </Button>
-                <Button href="/register" size="sm" className="flex-1 justify-center">
-                  Registrarse
                 </Button>
               </li>
             )}
