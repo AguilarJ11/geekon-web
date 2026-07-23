@@ -3,7 +3,8 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import Stars from "@/components/Stars";
-import { BadgeCard, EmptyBadges, ActionCard, ACTIONS } from "./components";
+import { BadgeCard, EmptyBadges, ActionCard } from "./components";
+import { ACTIONS } from "./actions";
 
 const ROLES: Record<string, { label: string; color: string; glow: string }> = {
   USER:             { label: "Miembro",              color: "#7B2FFF", glow: "rgba(123,47,255,0.45)" },
