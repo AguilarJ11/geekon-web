@@ -11,11 +11,37 @@ interface Field {
   order: number;
 }
 
+type Status = "PENDING" | "APPROVED" | "REJECTED";
+
 interface Submission {
   id: string;
   createdAt: string;
   data: Record<string, unknown>;
+  status: Status;
   user: { id: string; name: string | null; email: string };
+}
+
+const STATUS_LABEL: Record<Status, string> = {
+  PENDING: "Pendiente",
+  APPROVED: "Aprobada",
+  REJECTED: "Rechazada",
+};
+
+const STATUS_STYLE: Record<Status, { color: string; background: string; borderColor: string }> = {
+  PENDING:  { color: "#F59E0B", background: "rgba(245,158,11,0.1)", borderColor: "rgba(245,158,11,0.3)" },
+  APPROVED: { color: "#10B981", background: "rgba(16,185,129,0.1)", borderColor: "rgba(16,185,129,0.3)" },
+  REJECTED: { color: "#FF2D9B", background: "rgba(255,45,155,0.1)", borderColor: "rgba(255,45,155,0.3)" },
+};
+
+function StatusBadge({ status }: { status: Status }) {
+  return (
+    <span
+      className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border"
+      style={STATUS_STYLE[status]}
+    >
+      {STATUS_LABEL[status]}
+    </span>
+  );
 }
 
 interface FormWithSubmissions {
@@ -34,6 +60,20 @@ export default function SubmissionsPage({ params }: { params: Promise<{ id: stri
       .then(r => r.ok ? r.json() : null)
       .then(d => { if (d) setData(d); else router.push("/admin/formularios"); });
   }, [id]);
+
+  async function updateStatus(submissionId: string, status: Status) {
+    const res = await fetch(`/api/admin/forms/${id}/submissions/${submissionId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status }),
+    });
+    if (!res.ok || !data) return;
+    setData({
+      ...data,
+      submissions: data.submissions.map(s => s.id === submissionId ? { ...s, status } : s),
+    });
+    setSelected(sel => sel && sel.id === submissionId ? { ...sel, status } : sel);
+  }
 
   if (!data) return (
     <div className="min-h-screen bg-navy flex items-center justify-center text-content/40">
@@ -69,6 +109,7 @@ export default function SubmissionsPage({ params }: { params: Promise<{ id: stri
                     </th>
                   ))}
                   <th className="text-left px-4 py-3 text-content/40 font-semibold text-xs uppercase tracking-wider">Fecha</th>
+                  <th className="text-left px-4 py-3 text-content/40 font-semibold text-xs uppercase tracking-wider">Estado</th>
                   <th className="px-4 py-3" />
                 </tr>
               </thead>
@@ -94,10 +135,27 @@ export default function SubmissionsPage({ params }: { params: Promise<{ id: stri
                       })}
                     </td>
                     <td className="px-4 py-3">
-                      <button onClick={() => setSelected(sub)}
-                        className="text-xs text-violet hover:text-violet/70 transition-colors">
-                        Ver
-                      </button>
+                      <StatusBadge status={sub.status} />
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        <button onClick={() => setSelected(sub)}
+                          className="text-xs text-violet hover:text-violet/70 transition-colors">
+                          Ver
+                        </button>
+                        {sub.status !== "APPROVED" && (
+                          <button onClick={() => updateStatus(sub.id, "APPROVED")}
+                            className="text-xs text-[#10B981] hover:brightness-125 transition-all">
+                            Aprobar
+                          </button>
+                        )}
+                        {sub.status !== "REJECTED" && (
+                          <button onClick={() => updateStatus(sub.id, "REJECTED")}
+                            className="text-xs text-pink hover:brightness-125 transition-all">
+                            Rechazar
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -115,13 +173,36 @@ export default function SubmissionsPage({ params }: { params: Promise<{ id: stri
           <div className="w-full max-w-lg rounded-2xl p-8 max-h-[80vh] overflow-y-auto"
             style={{ background: "#0A0726", border: "1px solid rgba(123,47,255,0.25)" }}
             onClick={e => e.stopPropagation()}>
-            <div className="flex items-start justify-between mb-6">
+            <div className="flex items-start justify-between mb-4">
               <div>
                 <div className="font-bold">{selected.user.name ?? selected.user.email}</div>
                 <div className="text-xs text-content/40">{selected.user.email}</div>
               </div>
               <button onClick={() => setSelected(null)} className="text-content/40 hover:text-content text-xl">×</button>
             </div>
+
+            <div className="flex items-center gap-3 mb-6">
+              <StatusBadge status={selected.status} />
+              {selected.status !== "APPROVED" && (
+                <button onClick={() => updateStatus(selected.id, "APPROVED")}
+                  className="text-xs text-[#10B981] hover:brightness-125 transition-all">
+                  Aprobar
+                </button>
+              )}
+              {selected.status !== "REJECTED" && (
+                <button onClick={() => updateStatus(selected.id, "REJECTED")}
+                  className="text-xs text-pink hover:brightness-125 transition-all">
+                  Rechazar
+                </button>
+              )}
+              {selected.status !== "PENDING" && (
+                <button onClick={() => updateStatus(selected.id, "PENDING")}
+                  className="text-xs text-content/40 hover:text-content/70 transition-all">
+                  Marcar pendiente
+                </button>
+              )}
+            </div>
+
             <div className="space-y-4">
               {sortedFields.map(f => (
                 <div key={f.id}>

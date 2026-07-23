@@ -1,7 +1,5 @@
 "use client";
 
-import { ACTIONS } from "./actions";
-
 export function BadgeCard({
   icon, name, edition, awardedAt,
 }: {
@@ -64,7 +62,11 @@ export function EmptyBadges() {
   );
 }
 
-export function ActionCard({ icon, label, sub, href, color }: typeof ACTIONS[0]) {
+export function ActionCard({
+  icon, label, sub, href, color,
+}: {
+  icon: string; label: string; sub: string; href: string; color: string;
+}) {
   return (
     <a
       href={href}
@@ -96,5 +98,52 @@ export function ActionCard({ icon, label, sub, href, color }: typeof ACTIONS[0])
         <p style={{ fontSize: "0.72rem", color: "rgba(234,230,255,0.4)" }}>{sub}</p>
       </div>
     </a>
+  );
+}
+
+type SubmissionStatus = "PENDING" | "APPROVED" | "REJECTED";
+
+const STATUS_LABEL: Record<SubmissionStatus, string> = {
+  PENDING: "Pendiente",
+  APPROVED: "Aprobada",
+  REJECTED: "Rechazada",
+};
+
+const STATUS_STYLE: Record<SubmissionStatus, { color: string; background: string; borderColor: string }> = {
+  PENDING:  { color: "#F59E0B", background: "rgba(245,158,11,0.1)", borderColor: "rgba(245,158,11,0.3)" },
+  APPROVED: { color: "#10B981", background: "rgba(16,185,129,0.1)", borderColor: "rgba(16,185,129,0.3)" },
+  REJECTED: { color: "#FF2D9B", background: "rgba(255,45,155,0.1)", borderColor: "rgba(255,45,155,0.3)" },
+};
+
+export function ApplicationCard({
+  title, createdAt, status,
+}: {
+  title: string; createdAt: Date; status: SubmissionStatus;
+}) {
+  return (
+    <div style={{
+      display: "flex", alignItems: "center", justifyContent: "space-between",
+      gap: "12px", padding: "14px 18px",
+      background: "rgba(255,255,255,0.02)",
+      border: "1px solid rgba(255,255,255,0.08)",
+      borderRadius: "14px",
+    }}>
+      <div>
+        <p style={{ fontSize: "0.85rem", fontWeight: 700 }}>{title}</p>
+        <p style={{ fontSize: "0.7rem", color: "rgba(234,230,255,0.35)", marginTop: "2px" }}>
+          Enviada el {new Date(createdAt).toLocaleDateString("es-UY", { day: "2-digit", month: "short", year: "numeric" })}
+        </p>
+      </div>
+      <span
+        style={{
+          padding: "4px 12px", borderRadius: "100px",
+          fontSize: "0.72rem", fontWeight: 700, whiteSpace: "nowrap",
+          border: "1px solid",
+          ...STATUS_STYLE[status],
+        }}
+      >
+        {STATUS_LABEL[status]}
+      </span>
+    </div>
   );
 }

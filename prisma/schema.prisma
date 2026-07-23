@@ -70,12 +70,19 @@ model FormField {
   @@index([formId, order])
 }
 
+enum SubmissionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model FormSubmission {
-  id        String   @id @default(cuid())
+  id        String           @id @default(cuid())
   formId    String
   userId    String
   data      Json
-  createdAt DateTime @default(now())
+  status    SubmissionStatus @default(PENDING)
+  createdAt DateTime         @default(now())
 
   form Form @relation(fields: [formId], references: [id], onDelete: Cascade)
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)

@@ -4,8 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import Stars from "@/components/Stars";
 import Button from "@/components/ui/Button";
-import { BadgeCard, EmptyBadges, ActionCard } from "./components";
-import { ACTIONS } from "./actions";
+import { BadgeCard, EmptyBadges, ActionCard, ApplicationCard } from "./components";
 import { INTEREST_CATALOG } from "@/lib/profile-catalog";
 
 const SOCIAL_LINKS: Record<string, (handle: string) => { href: string; icon: string; label: string }> = {
@@ -13,6 +12,8 @@ const SOCIAL_LINKS: Record<string, (handle: string) => { href: string; icon: str
   tiktok:    (h) => ({ href: `https://tiktok.com/@${h.replace(/^@/, "")}`, icon: "🎵", label: h }),
   twitter:   (h) => ({ href: `https://x.com/${h.replace(/^@/, "")}`, icon: "✕", label: h }),
 };
+
+const FORM_COLORS = ["#00E5FF", "#FF2D9B", "#7B2FFF", "#F59E0B", "#10B981"];
 
 const ROLES: Record<string, { label: string; color: string; glow: string }> = {
   USER:             { label: "Miembro",              color: "#7B2FFF", glow: "rgba(123,47,255,0.45)" },
@@ -32,10 +33,20 @@ export default async function PerfilPage() {
     where: { email: session.user.email },
     include: {
       badges: { include: { badge: true }, orderBy: { awardedAt: "desc" } },
+      submissions: {
+        include: { form: { select: { title: true } } },
+        orderBy: { createdAt: "desc" },
+      },
     },
   });
 
   if (!user) redirect("/login");
+
+  const appliedFormIds = new Set(user.submissions.map((s) => s.formId));
+  const openForms = await prisma.form.findMany({
+    where: { isPublished: true, id: { notIn: [...appliedFormIds] } },
+    orderBy: { createdAt: "desc" },
+  });
 
   const role = ROLES[user.role] ?? ROLES.USER;
   const initials = user.name
@@ -296,6 +307,35 @@ export default async function PerfilPage() {
           {/* Separador */}
           <div className="gradient-divider animate-fadeIn delay-400" style={{ marginBottom: "2.5rem" }} />
 
+          {/* ── Mis postulaciones ──────────────────────────────── */}
+          {user.submissions.length > 0 && (
+            <>
+              <section className="animate-fadeInUp delay-500" style={{ marginBottom: "2.5rem" }}>
+                <div style={{ marginBottom: "1.25rem" }}>
+                  <h2 style={{ fontSize: "0.85rem", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase" }}>
+                    Mis postulaciones
+                  </h2>
+                  <p style={{ fontSize: "0.78rem", color: "rgba(234,230,255,0.35)", marginTop: "3px" }}>
+                    Estado de tus postulaciones enviadas
+                  </p>
+                </div>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                  {user.submissions.map((sub) => (
+                    <ApplicationCard
+                      key={sub.id}
+                      title={sub.form.title}
+                      createdAt={sub.createdAt}
+                      status={sub.status}
+                    />
+                  ))}
+                </div>
+              </section>
+
+              <div className="gradient-divider animate-fadeIn delay-500" style={{ marginBottom: "2.5rem" }} />
+            </>
+          )}
+
           {/* ── Acciones rápidas ─────────────────────────────── */}
           <section className="animate-fadeInUp delay-500">
             <div style={{ marginBottom: "1.25rem" }}>
@@ -307,11 +347,28 @@ export default async function PerfilPage() {
               </p>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "10px" }}>
-              {ACTIONS.map((a) => (
-                <ActionCard key={a.href} {...a} />
-              ))}
-            </div>
+            {openForms.length === 0 ? (
+              <div style={{
+                textAlign: "center", padding: "2rem",
+                border: "1px dashed rgba(255,255,255,0.1)", borderRadius: "16px",
+                color: "rgba(234,230,255,0.35)", fontSize: "0.85rem",
+              }}>
+                Todavía no hay postulaciones abiertas. ¡Volvé pronto!
+              </div>
+            ) : (
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "10px" }}>
+                {openForms.map((form, i) => (
+                  <ActionCard
+                    key={form.id}
+                    icon="📋"
+                    label={form.title}
+                    sub={form.description ?? "Postulate acá"}
+                    href={`/formularios/${form.slug}`}
+                    color={FORM_COLORS[i % FORM_COLORS.length]}
+                  />
+                ))}
+              </div>
+            )}
           </section>
 
         </div>
