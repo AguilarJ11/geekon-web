@@ -42,14 +42,24 @@ enum FieldType {
   DATE
 }
 
+enum FormCategory {
+  ARTE
+  STAND
+  COSPLAY
+  TORNEO
+  ACTIVIDAD
+  OTRO
+}
+
 model Form {
-  id          String   @id @default(cuid())
+  id          String       @id @default(cuid())
   title       String
   description String?
-  slug        String   @unique
-  isPublished Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  slug        String       @unique
+  category    FormCategory @default(OTRO)
+  isPublished Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 
   fields      FormField[]
   submissions FormSubmission[]
@@ -92,7 +102,7 @@ model FormSubmission {
 
 model Badge {
   id          String    @id @default(cuid())
-  name        String
+  name        String    @unique
   description String
   icon        String
   edition     String?

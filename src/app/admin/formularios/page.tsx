@@ -4,12 +4,14 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Button from "@/components/ui/Button";
 import Eyebrow from "@/components/ui/Eyebrow";
+import { FORM_CATEGORIES, categoryInfo } from "@/lib/form-categories";
 
 interface Form {
   id: string;
   title: string;
   description: string | null;
   slug: string;
+  category: string;
   isPublished: boolean;
   createdAt: string;
   _count: { fields: number; submissions: number };
@@ -21,6 +23,7 @@ export default function AdminFormsPage() {
   const [creating, setCreating] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [category, setCategory] = useState<string>("OTRO");
   const [showNew, setShowNew] = useState(false);
 
   async function load() {
@@ -37,11 +40,11 @@ export default function AdminFormsPage() {
     const res = await fetch("/api/admin/forms", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, description }),
+      body: JSON.stringify({ title, description, category }),
     });
     if (res.ok) {
       const form = await res.json();
-      setTitle(""); setDescription(""); setShowNew(false);
+      setTitle(""); setDescription(""); setCategory("OTRO"); setShowNew(false);
       window.location.href = `/admin/formularios/${form.id}/editar`;
     }
     setCreating(false);
@@ -93,6 +96,17 @@ export default function AdminFormsPage() {
                     className="input-premium resize-none" rows={3}
                     placeholder="Breve descripción del formulario..." />
                 </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1.5 text-content/65">Categoría</label>
+                  <select value={category} onChange={e => setCategory(e.target.value)} className="input-premium">
+                    {FORM_CATEGORIES.map(c => (
+                      <option key={c.key} value={c.key}>{c.icon} {c.label}</option>
+                    ))}
+                  </select>
+                  <p className="text-xs text-content/35 mt-1.5">
+                    Al aprobar una postulación de esta categoría, el usuario recibe el título &quot;{categoryInfo(category).roleLabel}&quot; en su perfil.
+                  </p>
+                </div>
                 <div className="flex gap-3 pt-2">
                   <Button type="submit" disabled={creating} size="md" className="flex-1 justify-center">
                     {creating ? "Creando..." : "Crear y editar"}
@@ -129,6 +143,14 @@ export default function AdminFormsPage() {
                         : "text-content/40 bg-white/5 border-white/10"
                     }`}>
                       {form.isPublished ? "Publicado" : "Borrador"}
+                    </span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border"
+                      style={{
+                        color: categoryInfo(form.category).color,
+                        background: `${categoryInfo(form.category).color}18`,
+                        borderColor: `${categoryInfo(form.category).color}40`,
+                      }}>
+                      {categoryInfo(form.category).icon} {categoryInfo(form.category).roleLabel}
                     </span>
                   </div>
                   <div className="text-xs text-content/40 flex gap-3">

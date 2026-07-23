@@ -4,6 +4,7 @@ import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
 import { FieldType } from "@prisma/client";
+import { FORM_CATEGORIES, categoryInfo } from "@/lib/form-categories";
 
 interface Field {
   id: string;
@@ -20,6 +21,7 @@ interface Form {
   title: string;
   description: string | null;
   slug: string;
+  category: string;
   isPublished: boolean;
   fields: Field[];
 }
@@ -175,6 +177,15 @@ export default function EditFormPage({ params }: { params: Promise<{ id: string 
     setSaving(false);
   }
 
+  async function saveCategory(category: string) {
+    setForm(f => f ? { ...f, category } : f);
+    await fetch(`/api/admin/forms/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ category }),
+    });
+  }
+
   async function togglePublish() {
     if (!form) return;
     const res = await fetch(`/api/admin/forms/${id}`, {
@@ -287,6 +298,21 @@ export default function EditFormPage({ params }: { params: Promise<{ id: string 
               rows={2}
               placeholder="Descripción pública del formulario..."
             />
+          </div>
+          <div>
+            <label className="block text-xs text-content/50 mb-1.5">Categoría</label>
+            <select
+              value={form.category}
+              onChange={e => saveCategory(e.target.value)}
+              className="input-premium text-sm py-2"
+            >
+              {FORM_CATEGORIES.map(c => (
+                <option key={c.key} value={c.key}>{c.icon} {c.label}</option>
+              ))}
+            </select>
+            <p className="text-xs text-content/35 mt-1.5">
+              Al aprobar una postulación acá, el usuario recibe el título &quot;{categoryInfo(form.category).roleLabel}&quot;.
+            </p>
           </div>
           <div className="flex items-center justify-between pt-1">
             <span className="text-xs text-content/40">/formularios/{form.slug}</span>

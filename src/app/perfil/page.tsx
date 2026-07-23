@@ -6,6 +6,7 @@ import Stars from "@/components/Stars";
 import Button from "@/components/ui/Button";
 import { BadgeCard, EmptyBadges, ActionCard, ApplicationCard } from "./components";
 import { INTEREST_CATALOG } from "@/lib/profile-catalog";
+import { FORM_CATEGORIES, categoryInfo } from "@/lib/form-categories";
 
 const SOCIAL_LINKS: Record<string, (handle: string) => { href: string; icon: string; label: string }> = {
   instagram: (h) => ({ href: `https://instagram.com/${h.replace(/^@/, "")}`, icon: "📷", label: h }),
@@ -13,10 +14,7 @@ const SOCIAL_LINKS: Record<string, (handle: string) => { href: string; icon: str
   twitter:   (h) => ({ href: `https://x.com/${h.replace(/^@/, "")}`, icon: "✕", label: h }),
 };
 
-const FORM_COLORS = ["#00E5FF", "#FF2D9B", "#7B2FFF", "#F59E0B", "#10B981"];
-
 const ROLES: Record<string, { label: string; color: string; glow: string }> = {
-  USER:             { label: "Miembro",              color: "#7B2FFF", glow: "rgba(123,47,255,0.45)" },
   ADMIN:            { label: "Administrador",         color: "#F59E0B", glow: "rgba(245,158,11,0.5)"  },
   ARTIST:           { label: "Artista",               color: "#00E5FF", glow: "rgba(0,229,255,0.4)"   },
   COMMERCIAL_STAND: { label: "Stand Comercial",       color: "#FF2D9B", glow: "rgba(255,45,155,0.4)"  },
@@ -24,6 +22,10 @@ const ROLES: Record<string, { label: string; color: string; glow: string }> = {
   STAFF_STANDS:     { label: "Staff de Stands",       color: "#10B981", glow: "rgba(16,185,129,0.4)"  },
   COORDINATOR:      { label: "Coordinador",           color: "#FF2D9B", glow: "rgba(255,45,155,0.5)"  },
 };
+
+const VISITANTE = { label: "Visitante", color: "#8B8B9E", glow: "rgba(139,139,158,0.3)" };
+
+const XP_PER_LEVEL = 300;
 
 export default async function PerfilPage() {
   const session = await getServerSession(authOptions);
@@ -34,7 +36,7 @@ export default async function PerfilPage() {
     include: {
       badges: { include: { badge: true }, orderBy: { awardedAt: "desc" } },
       submissions: {
-        include: { form: { select: { title: true } } },
+        include: { form: { select: { title: true, category: true } } },
         orderBy: { createdAt: "desc" },
       },
     },
@@ -46,9 +48,26 @@ export default async function PerfilPage() {
   const openForms = await prisma.form.findMany({
     where: { isPublished: true, id: { notIn: [...appliedFormIds] } },
     orderBy: { createdAt: "desc" },
+    select: { id: true, title: true, description: true, slug: true, category: true },
   });
 
-  const role = ROLES[user.role] ?? ROLES.USER;
+  const approvedCategories = new Set(
+    user.submissions.filter((s) => s.status === "APPROVED").map((s) => s.form.category)
+  );
+  const participationRole = FORM_CATEGORIES.find((c) => approvedCategories.has(c.key));
+
+  const role = ROLES[user.role]
+    ?? (participationRole
+      ? { label: participationRole.roleLabel, color: participationRole.color, glow: `${participationRole.color}73` }
+      : VISITANTE);
+
+  const approvedCount = approvedCategories.size > 0
+    ? user.submissions.filter((s) => s.status === "APPROVED").length
+    : 0;
+  const xp = approvedCount * 100 + user.badges.length * 50;
+  const level = Math.floor(xp / XP_PER_LEVEL) + 1;
+  const xpProgress = ((xp % XP_PER_LEVEL) / XP_PER_LEVEL) * 100;
+
   const initials = user.name
     ? user.name.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2)
     : "?";
@@ -178,6 +197,27 @@ export default async function PerfilPage() {
               }} />
               {role.label}
             </span>
+
+            {/* Nivel / XP */}
+            <div style={{ maxWidth: "220px", margin: "0.85rem auto 0" }}>
+              <div style={{
+                display: "flex", justifyContent: "space-between",
+                fontSize: "0.68rem", color: "rgba(234,230,255,0.4)", marginBottom: "4px",
+              }}>
+                <span>Nivel {level}</span>
+                <span>{xp} XP</span>
+              </div>
+              <div style={{
+                height: "6px", borderRadius: "100px",
+                background: "rgba(255,255,255,0.06)", overflow: "hidden",
+              }}>
+                <div style={{
+                  height: "100%", width: `${xpProgress}%`,
+                  background: "linear-gradient(90deg, #7B2FFF, #00E5FF)",
+                  borderRadius: "100px",
+                }} />
+              </div>
+            </div>
 
             {user.bio && (
               <p style={{
@@ -357,16 +397,19 @@ export default async function PerfilPage() {
               </div>
             ) : (
               <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "10px" }}>
-                {openForms.map((form, i) => (
-                  <ActionCard
-                    key={form.id}
-                    icon="📋"
-                    label={form.title}
-                    sub={form.description ?? "Postulate acá"}
-                    href={`/formularios/${form.slug}`}
-                    color={FORM_COLORS[i % FORM_COLORS.length]}
-                  />
-                ))}
+                {openForms.map((form) => {
+                  const cat = categoryInfo(form.category);
+                  return (
+                    <ActionCard
+                      key={form.id}
+                      icon={cat.icon}
+                      label={form.title}
+                      sub={form.description ?? "Postulate acá"}
+                      href={`/formularios/${form.slug}`}
+                      color={cat.color}
+                    />
+                  );
+                })}
               </div>
             )}
           </section>
