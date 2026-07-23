@@ -64,7 +64,7 @@ function WinnerBadge() {
   );
 }
 
-const DATE_FORMAT = new Intl.DateTimeFormat("es-UY", { day: "numeric", month: "long", year: "numeric" });
+const DATE_FORMAT = new Intl.DateTimeFormat("es-UY", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
 
 interface FormWithSubmissions {
   form: {

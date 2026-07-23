@@ -34,7 +34,7 @@ interface Form {
   fullPaymentDueDate: string | null;
 }
 
-const DATE_FORMAT = new Intl.DateTimeFormat("es-UY", { day: "numeric", month: "long", year: "numeric" });
+const DATE_FORMAT = new Intl.DateTimeFormat("es-UY", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
 
 const PRICE_FORMAT = new Intl.NumberFormat("es-UY", { style: "currency", currency: "UYU", maximumFractionDigits: 0 });
 
