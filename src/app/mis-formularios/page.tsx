@@ -26,7 +26,7 @@ export default function MisFormulariosPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-navy px-6 py-12">
+    <div className="min-h-screen bg-navy px-6 pt-[94px] pb-12">
       <div className="max-w-4xl mx-auto">
         <div className="mb-10">
           <Eyebrow color="violet">Organizador</Eyebrow>

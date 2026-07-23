@@ -98,7 +98,7 @@ export default function SubmissionsManager({
   const sortedFields = [...data.form.fields].sort((a, b) => a.order - b.order);
 
   return (
-    <div className="min-h-screen bg-navy px-6 py-12">
+    <div className="min-h-screen bg-navy px-6 pt-[94px] pb-12">
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center gap-3 mb-2">
           <Button variant="ghost" size="sm" href={backHref}>← Volver</Button>

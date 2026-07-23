@@ -169,7 +169,7 @@ export default function EditFormPage({ params }: { params: Promise<{ id: string 
   const sortedFields = [...form.fields].sort((a, b) => a.order - b.order);
 
   return (
-    <div className="min-h-screen bg-navy px-6 py-12">
+    <div className="min-h-screen bg-navy px-6 pt-[94px] pb-12">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="flex items-center gap-3 mb-8">

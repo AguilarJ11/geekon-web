@@ -73,7 +73,7 @@ export default function AdminFormsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-navy px-6 py-12">
+    <div className="min-h-screen bg-navy px-6 pt-[94px] pb-12">
       <div className="max-w-4xl mx-auto">
         <div className="mb-10 flex items-start justify-between gap-4">
           <div>
