@@ -1,9 +1,10 @@
 import Stars from "@/components/Stars";
 import Reveal from "@/components/Reveal";
-import FormCard from "@/app/components/FormCard";
+import FormCardsCarousel from "@/app/components/FormCardsCarousel";
 import Button from "@/components/ui/Button";
 import Eyebrow from "@/components/ui/Eyebrow";
 import StatsTicker from "@/components/StatsTicker";
+import { FORM_CATEGORIES } from "@/lib/form-categories";
 
 /* ── Feature icons ──────────────────────────────────────── */
 
@@ -62,12 +63,31 @@ const FEATURES: Feature[] = [
   },
 ];
 
-const FORM_CARDS = [
-  { icon: "🛍️", title: "Stand Comercial",    tag: "Comercial", color: "#FF2D9B", glow: "rgba(255,45,155,0.3)",  desc: "Tienda o emprendimiento. Mostrá tus productos al público geek.",        href: "/formularios?categoria=STAND"         },
-  { icon: "🎨", title: "Artist Alley",       tag: "Arte",      color: "#00E5FF", glow: "rgba(0,229,255,0.3)",   desc: "Tenés arte, fanart o ilustraciones propias. Postulate para tu mesa.",   href: "/formularios?categoria=ARTE"          },
-  { icon: "💡", title: "Actividades",        tag: "Actividad", color: "#10B981", glow: "rgba(16,185,129,0.3)",  desc: "¿Tenés idea para una actividad o experiencia? Mandanos tu propuesta.",  href: "/formularios?categoria=ACTIVIDAD"     },
-  { icon: "🎤", title: "Charlas / Talleres", tag: "Charlas",   color: "#3B82F6", glow: "rgba(59,130,246,0.3)",  desc: "Dictá una charla o taller para la comunidad geek.",                     href: "/formularios?categoria=CHARLA_TALLER" },
-];
+const CATEGORY_CARD_COPY: Record<string, { tag: string; desc: string }> = {
+  STAND:         { tag: "Comercial", desc: "Tienda o emprendimiento. Mostrá tus productos al público geek." },
+  ARTE:          { tag: "Arte",      desc: "Tenés arte, fanart o ilustraciones propias. Postulate para tu mesa." },
+  ACTIVIDAD:     { tag: "Actividad", desc: "¿Tenés idea para una actividad o experiencia? Mandanos tu propuesta." },
+  CHARLA_TALLER: { tag: "Charlas",   desc: "Dictá una charla o taller para la comunidad geek." },
+  COSPLAY:       { tag: "Escenario", desc: "Inscribite y mostrá tu mejor cosplay en el escenario principal." },
+  TORNEO:        { tag: "Torneo",    desc: "Competí en los torneos y competencias del evento." },
+  OTRO:          { tag: "Otro",      desc: "¿Tenés otra propuesta? Contanos de qué se trata." },
+};
+
+function hexToRgba(hex: string, alpha: number) {
+  const n = parseInt(hex.replace("#", ""), 16);
+  const r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+const FORM_CARDS = FORM_CATEGORIES.map(cat => ({
+  icon: cat.icon,
+  title: cat.label,
+  tag: CATEGORY_CARD_COPY[cat.key]?.tag ?? cat.label,
+  color: cat.color,
+  glow: hexToRgba(cat.color, 0.3),
+  desc: CATEGORY_CARD_COPY[cat.key]?.desc ?? "",
+  href: `/formularios?categoria=${cat.key}`,
+}));
 
 /* ── Page ──────────────────────────────────────────────── */
 
@@ -286,13 +306,9 @@ export default function HomePage() {
           </Reveal>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {FORM_CARDS.map((card, i) => (
-            <Reveal key={card.href} delay={i * 60}>
-              <FormCard {...card} />
-            </Reveal>
-          ))}
-        </div>
+        <Reveal delay={220}>
+          <FormCardsCarousel cards={FORM_CARDS} />
+        </Reveal>
       </section>
 
       {/* ══════════════════════════════════════════════════

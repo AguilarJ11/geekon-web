@@ -143,6 +143,9 @@
   }
   .nav-link:hover  { color: #EAE6FF; background: rgba(255,255,255,0.05); }
   .nav-link.active { color: #EAE6FF; }
+
+  /* ── Scroll horizontal sin barra visible (carruseles) ────── */
+  .no-scrollbar::-webkit-scrollbar { display: none; }
 }
 
 /* ── Keyframes (no compiten en la cascada, no necesitan layer) ── */

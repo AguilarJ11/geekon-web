@@ -86,8 +86,13 @@ export default function Navbar() {
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet/50",
               )}
             >
-              <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 bg-gradient-to-br from-violet to-pink text-white">
-                {session.user?.name?.[0]?.toUpperCase() ?? "U"}
+              <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 text-white"
+                style={{
+                  background: session.user?.image
+                    ? `center/cover no-repeat url(${session.user.image})`
+                    : "linear-gradient(135deg, #7B2FFF 0%, #FF2D9B 100%)",
+                }}>
+                {!session.user?.image && (session.user?.name?.[0]?.toUpperCase() ?? "U")}
               </div>
               <span className="hidden sm:block max-w-[100px] truncate">
                 {session.user?.name?.split(" ")[0]}
