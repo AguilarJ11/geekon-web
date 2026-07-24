@@ -28,6 +28,7 @@ interface Form {
   title: string;
   description: string | null;
   slug: string;
+  category: string;
   fields: Field[];
   standOptions: StandOption[];
   depositDueDate: string | null;
@@ -35,6 +36,13 @@ interface Form {
 }
 
 const DATE_FORMAT = new Intl.DateTimeFormat("es-UY", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+
+// Mascotas de GeekOn tematizadas — solo algunas categorías tienen ilustración propia por ahora.
+const CATEGORY_MASCOTS: Record<string, string[]> = {
+  COSPLAY:       ["/mascots/gon-cosplay.webp", "/mascots/eek-cosplay.webp"],
+  TORNEO:        ["/mascots/gon-gamer.webp"],
+  CHARLA_TALLER: ["/mascots/gon-espectaculo.webp"],
+};
 
 const PRICE_FORMAT = new Intl.NumberFormat("es-UY", { style: "currency", currency: "UYU", maximumFractionDigits: 0 });
 
@@ -233,6 +241,16 @@ export default function PublicFormPage({ params }: { params: Promise<{ slug: str
             Respondiendo como <span className="text-content/70 font-medium">{session?.user?.email}</span>
           </div>
         </div>
+
+        {CATEGORY_MASCOTS[form!.category] && (
+          <div className="flex justify-center items-end gap-4 mb-8" aria-hidden="true">
+            {CATEGORY_MASCOTS[form!.category].map(src => (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img key={src} src={src} alt="" className="h-32 sm:h-40 w-auto"
+                style={{ filter: "drop-shadow(0 12px 32px rgba(123,47,255,0.3))" }} />
+            ))}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit}
           className="rounded-2xl p-8 space-y-6"

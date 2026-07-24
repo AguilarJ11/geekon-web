@@ -113,6 +113,32 @@ export default function HomePage() {
         {/* Grid overlay sutil */}
         <div className="absolute inset-0 pointer-events-none grid-overlay opacity-20" aria-hidden="true" />
 
+        {/* Mascotas — Gon y Eek flanqueando el hero */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/mascots/gon.webp"
+          alt=""
+          aria-hidden="true"
+          className="hidden xl:block absolute pointer-events-none select-none"
+          style={{
+            left: "-40px", bottom: "-20px", width: "340px",
+            filter: "drop-shadow(0 20px 60px rgba(123,47,255,0.35))",
+            animation: "floatGon 6s ease-in-out infinite",
+          }}
+        />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/mascots/eek.webp"
+          alt=""
+          aria-hidden="true"
+          className="hidden xl:block absolute pointer-events-none select-none"
+          style={{
+            right: "-30px", bottom: "0px", width: "270px",
+            filter: "drop-shadow(0 20px 60px rgba(0,229,255,0.3))",
+            animation: "floatEek 5.5s ease-in-out infinite",
+          }}
+        />
+
         {/* Contenido */}
         <div className="relative z-10 px-8 max-w-4xl mx-auto">
 
@@ -287,7 +313,7 @@ export default function HomePage() {
       ══════════════════════════════════════════════════ */}
       <section className="relative z-10 max-w-6xl mx-auto px-8 py-32">
 
-        <div className="mb-16">
+        <div className="relative mb-16">
           <Reveal className="mb-4">
             <Eyebrow color="cyan">Participá</Eyebrow>
           </Reveal>
@@ -304,6 +330,15 @@ export default function HomePage() {
               Elegí tu categoría y completá el formulario para la próxima edición.
             </p>
           </Reveal>
+
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/mascots/eek-curioso.webp"
+            alt=""
+            aria-hidden="true"
+            className="hidden lg:block absolute pointer-events-none select-none"
+            style={{ right: "0px", top: "-30px", width: "190px", filter: "drop-shadow(0 12px 32px rgba(0,229,255,0.25))" }}
+          />
         </div>
 
         <Reveal delay={220}>
