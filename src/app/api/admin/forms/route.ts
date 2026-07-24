@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { FORM_CATEGORIES, categoryInfo, participantBadgeName } from "@/lib/form-categories";
-import { awardBadge } from "@/lib/badges";
+import { FORM_CATEGORIES } from "@/lib/form-categories";
 import { DEFAULT_FIELDS } from "@/lib/default-fields";
 
 const VALID_CATEGORIES = FORM_CATEGORIES.map((c) => c.key);
@@ -79,16 +78,6 @@ export async function POST(req: NextRequest) {
         order,
       })),
     });
-  }
-
-  if (ownerId) {
-    const cat = categoryInfo(finalCategory);
-    await awardBadge(
-      ownerId,
-      participantBadgeName(cat.ownerRole, finalEdition),
-      `Organizador/a de "${form.title}"`,
-      cat.icon
-    );
   }
 
   return NextResponse.json(form, { status: 201 });

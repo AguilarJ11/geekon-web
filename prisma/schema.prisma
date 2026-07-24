@@ -9,8 +9,14 @@ datasource db {
 
 model User {
   id            String    @id @default(cuid())
+  // Handle único, distinto del nombre para mostrar. Nulo hasta que el usuario
+  // lo elige en el onboarding obligatorio post-login (ver /elegir-usuario);
+  // el middleware bloquea el resto del sitio hasta que lo complete. Se usa
+  // como slug del perfil público (/perfil/[username]).
+  username      String?   @unique
   name          String?
   email         String    @unique
+  showEmail     Boolean   @default(false)
   emailVerified DateTime?
   image         String?
   banner        String?
@@ -29,6 +35,7 @@ model User {
   badges      UserBadge[]
   submissions FormSubmission[]
   ownedForms  Form[]           @relation("FormOwner")
+  albums      Album[]          @relation("AlbumUploader")
 }
 
 enum FieldType {
@@ -156,4 +163,56 @@ model UserBadge {
   badge Badge @relation(fields: [badgeId], references: [id], onDelete: Cascade)
 
   @@unique([userId, badgeId])
+}
+
+enum AlbumStatus {
+  PENDING
+  APPROVED
+}
+
+// Álbumes de fotos de cada edición de GeekOn!. Solo ADMIN y usuarios con rol
+// FOTOGRAFO pueden crear álbumes y subir fotos (ver requireGalleryAccess en
+// lib/auth.ts). El álbum entra como PENDING y recién se ve en la galería
+// pública cuando un administrador lo aprueba (aprobación en bloque, ver
+// PATCH /api/gallery/albums/[id]) — puede también rechazar fotos puntuales
+// antes de aprobar el resto del álbum.
+model Album {
+  id           String      @id @default(cuid())
+  title        String
+  edition      String?
+  description  String?
+  coverUrl     String?
+  status       AlbumStatus @default(PENDING)
+  uploadedById String?
+  createdAt    DateTime    @default(now())
+
+  uploadedBy User?   @relation("AlbumUploader", fields: [uploadedById], references: [id], onDelete: SetNull)
+  photos     Photo[]
+
+  @@index([createdAt])
+}
+
+enum PhotoStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// Toda foto entra como PENDING, sin importar quién la suba (admin o
+// fotógrafo): solo se muestra en la galería pública una vez que un
+// administrador aprueba el álbum completo. Rechazar una foto puntual
+// requiere especificar el motivo (rejectionReason).
+model Photo {
+  id               String      @id @default(cuid())
+  albumId          String
+  url              String
+  publicId         String?
+  order            Int         @default(0)
+  status           PhotoStatus @default(PENDING)
+  rejectionReason  String?
+  createdAt        DateTime    @default(now())
+
+  album Album @relation(fields: [albumId], references: [id], onDelete: Cascade)
+
+  @@index([albumId, order])
 }

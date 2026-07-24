@@ -69,7 +69,7 @@ const FEATURES: Feature[] = [
 const CATEGORY_CARD_COPY: Record<string, { tag: string; desc: string }> = {
   STAND:         { tag: "Comercial", desc: "Tienda o emprendimiento. Mostrá tus productos al público geek." },
   ARTE:          { tag: "Arte",      desc: "Tenés arte, fanart o ilustraciones propias. Postulate para tu mesa." },
-  CHARLA_TALLER: { tag: "Charlas",   desc: "Dictá una charla o taller para la comunidad geek." },
+  CHARLA_TALLER: { tag: "Charlas",   desc: "Participá en una charla o en un taller para la comunidad geek." },
   COSPLAY:       { tag: "Escenario", desc: "Inscribite y mostrá tu mejor cosplay en el escenario principal." },
   TORNEO:        { tag: "Torneo",    desc: "Competí en los torneos y competencias del evento." },
   OTRO:          { tag: "Otras",     desc: "Otro tipo de actividades para sumar a la experiencia GeekOn!." },
@@ -88,7 +88,7 @@ const FORM_CARDS = FORM_CATEGORIES.map(cat => ({
   color: cat.color,
   glow: hexToRgba(cat.color, 0.3),
   desc: CATEGORY_CARD_COPY[cat.key]?.desc ?? "",
-  href: `/formularios?categoria=${cat.key}`,
+  href: `/inscripciones?categoria=${cat.key}`,
 }));
 
 /* ── Page ──────────────────────────────────────────────── */
@@ -135,7 +135,7 @@ export default function HomePage() {
             className="text-content/55 mx-auto animate-fadeInUp delay-200"
             style={{ fontSize: "1.125rem", lineHeight: 1.75, maxWidth: "460px", marginBottom: "2.75rem" }}
           >
-            El evento geek más grande de Uruguay. Comunidad activa y experiencias únicas todo el año.
+            El punto de encuentro para quienes viven la cultura geek en Uruguay.
           </p>
 
           <div className="flex gap-3 justify-center flex-wrap animate-fadeInUp delay-300">
@@ -276,7 +276,7 @@ export default function HomePage() {
 
           <Reveal delay={240}>
             <div className="flex gap-3 flex-wrap">
-              <Button href="/formularios" size="lg">Participar</Button>
+              <Button href="/inscripciones" size="lg">Participar</Button>
               <Button href="/galeria" variant="secondary" size="lg">Ver edición anterior</Button>
             </div>
           </Reveal>
@@ -297,7 +297,7 @@ export default function HomePage() {
               className="font-black mb-4 text-content"
               style={{ fontSize: "clamp(2rem, 5vw, 3.5rem)", letterSpacing: "-0.04em", lineHeight: 1.08 }}
             >
-              Formularios de<br />participación
+              Inscripciones para<br />participar
             </h2>
           </Reveal>
           <Reveal delay={160}>
@@ -376,10 +376,10 @@ export default function HomePage() {
 
           {[
             { title: "Participar", links: [
-              { label: "Stand Comercial",    href: "/formularios?categoria=STAND"         },
-              { label: "Artist Alley",       href: "/formularios?categoria=ARTE"          },
-              { label: "Cosplay",             href: "/formularios?categoria=COSPLAY"       },
-              { label: "Charlas / Talleres", href: "/formularios?categoria=CHARLA_TALLER" },
+              { label: "Stand Comercial",    href: "/inscripciones?categoria=STAND"         },
+              { label: "Artist Alley",       href: "/inscripciones?categoria=ARTE"          },
+              { label: "Cosplay",             href: "/inscripciones?categoria=COSPLAY"       },
+              { label: "Charlas / Talleres", href: "/inscripciones?categoria=CHARLA_TALLER" },
             ]},
             { title: "Comunidad", links: [
               { label: "Foro",         href: "/comunidad" },

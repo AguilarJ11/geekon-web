@@ -27,7 +27,7 @@ export async function PATCH(req: NextRequest) {
   const data: {
     name?: string; bio?: string; image?: string; banner?: string; city?: string | null;
     instagram?: string | null; discord?: string | null; tiktok?: string | null; twitter?: string | null;
-    interests?: string[];
+    interests?: string[]; showEmail?: boolean;
   } = {};
 
   if (typeof name === "string") {
@@ -63,11 +63,16 @@ export async function PATCH(req: NextRequest) {
     }
   }
 
+  const showEmail = form.get("showEmail");
+  if (typeof showEmail === "string") {
+    data.showEmail = showEmail === "1";
+  }
+
   if (form.get("interestsTouched") === "1") {
     const values = interests.map((v) => v.toString());
     const invalid = values.some((v) => !INTEREST_KEYS.has(v as never));
     if (invalid) return NextResponse.json({ error: "Tag de interés inválido" }, { status: 400 });
-    if (values.length > 8) return NextResponse.json({ error: "Máximo 8 intereses" }, { status: 400 });
+    if (values.length > 4) return NextResponse.json({ error: "Máximo 4 intereses" }, { status: 400 });
     data.interests = values;
   }
 
@@ -83,7 +88,7 @@ export async function PATCH(req: NextRequest) {
         return NextResponse.json({ error: `La imagen de ${field} supera los 5MB` }, { status: 400 });
       }
       const buffer = Buffer.from(await file.arrayBuffer());
-      const url = await uploadImage(buffer, field);
+      const { url } = await uploadImage(buffer, field);
       data[key] = url;
     }
   }

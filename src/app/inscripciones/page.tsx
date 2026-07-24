@@ -38,10 +38,10 @@ function FormulariosContent() {
     <div className="min-h-screen bg-navy px-6 pt-[94px] pb-12">
       <div className="max-w-4xl mx-auto">
         <div className="mb-10">
-          <Eyebrow color="violet">Participá</Eyebrow>
-          <h1 className="text-4xl font-black mt-3 tracking-tight">Formularios</h1>
+          <Eyebrow color="violet">Inscripciones</Eyebrow>
+          <h1 className="text-4xl font-black mt-3 tracking-tight">Participá en GeekOn!</h1>
           <p className="text-content/55 mt-2">
-            Postulate a los concursos, torneos y actividades abiertos de GeekOn!.
+            Postulate para participar de los diferentes sectores.
           </p>
 
           {activeCategory && (
@@ -50,7 +50,7 @@ function FormulariosContent() {
                 style={{ color: activeCategory.color, background: `${activeCategory.color}18`, borderColor: `${activeCategory.color}40` }}>
                 {activeCategory.icon} {activeCategory.label}
               </span>
-              <Link href="/formularios" className="text-xs text-content/40 hover:text-content/70 transition-colors">
+              <Link href="/inscripciones" className="text-xs text-content/40 hover:text-content/70 transition-colors">
                 Ver todos ✕
               </Link>
             </div>
@@ -75,18 +75,11 @@ function FormulariosContent() {
                 <div key={form.id} className="rounded-xl p-5 flex items-center gap-4"
                   style={{ background: "#0A0726", border: "1px solid rgba(255,255,255,0.07)" }}>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2.5 mb-1">
-                      <span className="font-semibold truncate">{form.title}</span>
-                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border"
-                        style={{ color: cat.color, background: `${cat.color}18`, borderColor: `${cat.color}40` }}>
-                        {cat.icon} {cat.label}
-                      </span>
-                      {form.hasSubmitted && (
-                        <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border text-cyan bg-cyan/10 border-cyan/20">
-                          Ya enviaste
-                        </span>
-                      )}
-                    </div>
+                    <span className="font-semibold truncate block">{form.title}</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border inline-flex items-center gap-1 mt-1.5 mb-1"
+                      style={{ color: cat.color, background: `${cat.color}18`, borderColor: `${cat.color}40` }}>
+                      {cat.icon} {cat.label}
+                    </span>
                     {form.description && (
                       <p className="text-sm text-content/50 truncate">{form.description}</p>
                     )}
@@ -100,8 +93,13 @@ function FormulariosContent() {
                       )}
                     </div>
                   </div>
-                  <div className="shrink-0">
-                    <Link href={`/formularios/${form.slug}`}>
+                  <div className="shrink-0 flex items-center gap-2.5">
+                    {form.hasSubmitted && (
+                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border text-cyan bg-cyan/10 border-cyan/20 whitespace-nowrap">
+                        Ya enviaste
+                      </span>
+                    )}
+                    <Link href={`/inscripciones/${form.slug}`}>
                       <Button variant={form.hasSubmitted ? "secondary" : "primary"} size="sm">
                         {form.hasSubmitted ? "Ver formulario" : "Responder"}
                       </Button>

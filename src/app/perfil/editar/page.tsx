@@ -24,6 +24,7 @@ export default async function EditarPerfilPage() {
         tiktok: user.tiktok ?? "",
         twitter: user.twitter ?? "",
         interests: user.interests,
+        showEmail: user.showEmail,
       }}
     />
   );

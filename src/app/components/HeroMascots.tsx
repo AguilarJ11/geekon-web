@@ -62,7 +62,7 @@ export default function HeroMascots() {
       <div
         ref={gonRef}
         className="hidden 2xl:block absolute pointer-events-none select-none"
-        style={{ left: "80px", top: "130px", width: "280px", willChange: "transform" }}
+        style={{ right: "70px", top: "130px", width: "310px", willChange: "transform" }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -79,7 +79,7 @@ export default function HeroMascots() {
       <div
         ref={eekRef}
         className="hidden 2xl:block absolute pointer-events-none select-none"
-        style={{ right: "90px", top: "110px", width: "220px", willChange: "transform" }}
+        style={{ left: "95px", top: "115px", width: "190px", willChange: "transform" }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img

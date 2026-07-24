@@ -192,7 +192,7 @@ export default function AdminFormsPage() {
                     <span>·</span>
                     <span>{form._count.submissions} respuestas</span>
                     <span>·</span>
-                    <span>/formularios/{form.slug}</span>
+                    <span>/inscripciones/{form.slug}</span>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">

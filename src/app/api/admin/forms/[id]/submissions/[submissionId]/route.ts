@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireFormAccess } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { categoryInfo, participantBadgeName, winnerBadgeName } from "@/lib/form-categories";
-import { awardBadge } from "@/lib/badges";
 
 const VALID_STATUSES = ["PENDING", "APPROVED", "REJECTED"];
 
@@ -18,10 +16,7 @@ export async function PATCH(
     return NextResponse.json({ error: "Estado inválido" }, { status: 400 });
   }
 
-  const submission = await prisma.formSubmission.findUnique({
-    where: { id: submissionId },
-    include: { form: { select: { category: true, title: true, edition: true } } },
-  });
+  const submission = await prisma.formSubmission.findUnique({ where: { id: submissionId } });
   if (!submission || submission.formId !== formId) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
@@ -39,26 +34,6 @@ export async function PATCH(
     where: { id: submissionId },
     data: update,
   });
-
-  const cat = categoryInfo(submission.form.category);
-
-  if (status === "APPROVED") {
-    await awardBadge(
-      submission.userId,
-      participantBadgeName(cat.participantRole, submission.form.edition),
-      `Postulación aprobada en "${submission.form.title}"`,
-      cat.icon
-    );
-  }
-
-  if (isWinner) {
-    await awardBadge(
-      submission.userId,
-      winnerBadgeName(cat.label, submission.form.edition),
-      `Ganador/a de "${submission.form.title}"`,
-      "🏆"
-    );
-  }
 
   return NextResponse.json(updated);
 }

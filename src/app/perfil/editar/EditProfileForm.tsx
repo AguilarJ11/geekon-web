@@ -17,6 +17,7 @@ interface Initial {
   tiktok: string;
   twitter: string;
   interests: string[];
+  showEmail: boolean;
 }
 
 export default function EditProfileForm({ initial }: { initial: Initial }) {
@@ -30,6 +31,7 @@ export default function EditProfileForm({ initial }: { initial: Initial }) {
   const [tiktok, setTiktok] = useState(initial.tiktok);
   const [twitter, setTwitter] = useState(initial.twitter);
   const [interests, setInterests] = useState<string[]>(initial.interests);
+  const [showEmail, setShowEmail] = useState(initial.showEmail);
   const [avatarPreview, setAvatarPreview] = useState(initial.image);
   const [bannerPreview, setBannerPreview] = useState(initial.banner);
   const [error, setError] = useState("");
@@ -39,7 +41,7 @@ export default function EditProfileForm({ initial }: { initial: Initial }) {
     setInterests((prev) =>
       prev.includes(key)
         ? prev.filter((k) => k !== key)
-        : prev.length >= 8 ? prev : [...prev, key]
+        : prev.length >= 4 ? prev : [...prev, key]
     );
   }
 
@@ -76,6 +78,7 @@ export default function EditProfileForm({ initial }: { initial: Initial }) {
     form.set("tiktok", tiktok);
     form.set("twitter", twitter);
     form.set("interestsTouched", "1");
+    form.set("showEmail", showEmail ? "1" : "0");
     interests.forEach((i) => form.append("interests", i));
     if (avatarFile.current) form.set("avatar", avatarFile.current);
     if (bannerFile.current) form.set("banner", bannerFile.current);
@@ -214,6 +217,21 @@ export default function EditProfileForm({ initial }: { initial: Initial }) {
             </div>
 
             <div>
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={showEmail}
+                  onChange={(e) => setShowEmail(e.target.checked)}
+                  className="accent-violet"
+                />
+                <span className="text-sm text-content/75">
+                  Mostrar mi email en mi perfil público
+                  <span className="block text-xs text-content/35 mt-0.5">Por defecto está oculto para el resto de la comunidad.</span>
+                </span>
+              </label>
+            </div>
+
+            <div>
               <p className="block text-sm font-medium mb-2 text-content/65">Redes sociales</p>
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex items-center gap-2">
@@ -265,7 +283,7 @@ export default function EditProfileForm({ initial }: { initial: Initial }) {
 
             <div>
               <p className="block text-sm font-medium mb-2 text-content/65">
-                Intereses / fandoms <span className="text-content/35 font-normal">({interests.length}/8)</span>
+                Intereses / fandoms <span className="text-content/35 font-normal">({interests.length}/4)</span>
               </p>
               <div className="flex flex-wrap gap-2">
                 {INTEREST_CATALOG.map((tag) => {
@@ -277,11 +295,10 @@ export default function EditProfileForm({ initial }: { initial: Initial }) {
                       onClick={() => toggleInterest(tag.key)}
                       className={
                         active
-                          ? "flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-medium border transition-colors bg-violet/20 border-violet/50 text-content"
-                          : "flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-medium border transition-colors bg-white/[0.02] border-white/12 text-content/55 hover:border-white/25 hover:text-content"
+                          ? "rounded-full px-3.5 py-2 text-sm font-medium border transition-colors bg-violet/20 border-violet/50 text-content"
+                          : "rounded-full px-3.5 py-2 text-sm font-medium border transition-colors bg-white/[0.02] border-white/12 text-content/55 hover:border-white/25 hover:text-content"
                       }
                     >
-                      <span aria-hidden="true">{tag.icon}</span>
                       {tag.label}
                     </button>
                   );

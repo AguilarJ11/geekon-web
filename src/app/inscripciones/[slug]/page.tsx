@@ -3,6 +3,7 @@
 import { useEffect, useState, use } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import Button from "@/components/ui/Button";
 import Eyebrow from "@/components/ui/Eyebrow";
 
@@ -152,7 +153,7 @@ export default function PublicFormPage({ params }: { params: Promise<{ slug: str
 
   useEffect(() => {
     if (status === "unauthenticated") {
-      router.push(`/login?redirect=/formularios/${slug}&reason=auth-required`);
+      router.push(`/login?redirect=/inscripciones/${slug}&reason=auth-required`);
       return;
     }
     if (status === "authenticated") {
@@ -224,21 +225,24 @@ export default function PublicFormPage({ params }: { params: Promise<{ slug: str
   const sortedFields = [...(form?.fields ?? [])].sort((a, b) => a.order - b.order);
 
   return (
-    <div className="min-h-screen bg-navy px-4 py-16 relative overflow-hidden">
+    <div className="min-h-screen bg-navy px-4 pt-[110px] pb-16 relative overflow-hidden">
       <div className="absolute pointer-events-none top-0 left-1/2 -translate-x-1/2 w-[700px] h-[400px]" aria-hidden="true">
         <div className="w-full h-full rounded-full"
           style={{ background: "radial-gradient(circle, rgba(123,47,255,0.15) 0%, transparent 70%)" }} />
       </div>
 
       <div className="relative z-10 max-w-xl mx-auto">
+        <Link href="/inscripciones" className="inline-block text-sm text-content/40 hover:text-content/70 transition-colors mb-8">
+          ← Volver a inscripciones
+        </Link>
+
         <div className="mb-8">
-          <Eyebrow color="violet" className="mb-4">Formulario</Eyebrow>
           <h1 className="text-3xl font-black tracking-tight mb-2">{form!.title}</h1>
           {form!.description && (
             <p className="text-content/55">{form!.description}</p>
           )}
           <div className="mt-3 text-sm text-content/40">
-            Respondiendo como <span className="text-content/70 font-medium">{session?.user?.email}</span>
+            Respondiendo como <span className="text-content/70 font-medium">@{(session?.user as { username?: string | null } | undefined)?.username}</span>
           </div>
         </div>
 
@@ -260,6 +264,19 @@ export default function PublicFormPage({ params }: { params: Promise<{ slug: str
             <div className="rounded-xl px-4 py-3 text-sm font-medium text-pink bg-pink/[0.08] border border-pink/[0.28]">
               {error}
             </div>
+          )}
+
+          {form!.category === "COSPLAY" && (
+            <a
+              href="/comunidad/reglamentos"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-between gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-colors hover:border-violet/40"
+              style={{ background: "rgba(123,47,255,0.08)", border: "1px solid rgba(123,47,255,0.25)" }}
+            >
+              <span>📋 Antes de postularte, leé el reglamento de Cosplay</span>
+              <span className="text-violet shrink-0">Ver reglamento →</span>
+            </a>
           )}
 
           {form!.standOptions.length > 0 && (
@@ -313,6 +330,9 @@ export default function PublicFormPage({ params }: { params: Promise<{ slug: str
 
           <Button type="submit" disabled={submitting} size="lg" className="w-full justify-center mt-2">
             {submitting ? "Enviando..." : "Enviar formulario"}
+          </Button>
+          <Button href="/inscripciones" variant="secondary" size="lg" className="w-full justify-center">
+            Cancelar
           </Button>
         </form>
       </div>

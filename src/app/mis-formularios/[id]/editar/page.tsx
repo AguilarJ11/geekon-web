@@ -164,10 +164,10 @@ export default function EditOwnedFormPage({ params }: { params: Promise<{ id: st
             />
           </div>
           <div className="flex items-center justify-between pt-1">
-            <span className="text-xs text-content/40">/formularios/{form.slug}</span>
+            <span className="text-xs text-content/40">/inscripciones/{form.slug}</span>
             <div className="flex gap-2">
               <Button variant="secondary" size="sm"
-                href={`/formularios/${form.slug}`} target="_blank">
+                href={`/inscripciones/${form.slug}`} target="_blank">
                 Preview
               </Button>
               <Button

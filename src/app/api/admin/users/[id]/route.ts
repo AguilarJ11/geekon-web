@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions, requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-const VALID_ROLES = ["USER", "ADMIN"];
+const VALID_ROLES = ["USER", "ADMIN", "FOTOGRAFO"];
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!await requireAdmin()) {

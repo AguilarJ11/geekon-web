@@ -103,6 +103,36 @@ export function ActionCard({
   );
 }
 
+export function GalleryAlbumCard({
+  id, title, edition, coverUrl, photoCount,
+}: {
+  id: string; title: string; edition: string | null; coverUrl: string | null; photoCount: number;
+}) {
+  return (
+    <Link href={`/galeria/${id}`} style={{
+      display: "block", position: "relative", aspectRatio: "4 / 3",
+      borderRadius: "16px", overflow: "hidden",
+      background: "rgba(0,229,255,0.06)",
+      border: "1px solid rgba(0,229,255,0.18)",
+      textDecoration: "none", color: "inherit",
+    }}>
+      {coverUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={coverUrl} alt={title} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
+      ) : (
+        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "2rem", opacity: 0.3 }}>📷</div>
+      )}
+      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(5,3,26,0.92) 0%, rgba(5,3,26,0.1) 55%, transparent 100%)" }} />
+      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "12px" }}>
+        <p style={{ fontSize: "0.82rem", fontWeight: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{title}</p>
+        <p style={{ fontSize: "0.7rem", color: "rgba(234,230,255,0.5)", marginTop: "2px" }}>
+          {edition && `${edition} · `}{photoCount} fotos
+        </p>
+      </div>
+    </Link>
+  );
+}
+
 type SubmissionStatus = "PENDING" | "APPROVED" | "REJECTED";
 
 const STATUS_LABEL: Record<SubmissionStatus, string> = {

@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin, requireFormAccess } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { categoryInfo, participantBadgeName } from "@/lib/form-categories";
-import { awardBadge } from "@/lib/badges";
 
 export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -49,16 +47,6 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   }
 
   const form = await prisma.form.update({ where: { id }, data: update });
-
-  if (access.isAdmin && form.ownerId && ("ownerEmail" in data)) {
-    const cat = categoryInfo(form.category);
-    await awardBadge(
-      form.ownerId,
-      participantBadgeName(cat.ownerRole, form.edition),
-      `Organizador/a de "${form.title}"`,
-      cat.icon
-    );
-  }
 
   return NextResponse.json(form);
 }

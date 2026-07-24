@@ -32,7 +32,7 @@ export const authOptions: NextAuthOptions = {
         const valid = await bcrypt.compare(credentials.password, user.password);
         if (!valid) return null;
 
-        return { id: user.id, email: user.email, name: user.name ?? "", role: user.role };
+        return { id: user.id, email: user.email, name: user.name ?? "", role: user.role, username: user.username };
       },
     }),
   ],
@@ -54,31 +54,37 @@ export const authOptions: NextAuthOptions = {
 
         user.id = dbUser.id;
         (user as { role?: string }).role = dbUser.role;
+        (user as { username?: string | null }).username = dbUser.username;
       }
       return true;
     },
     async jwt({ token, user }) {
       if (user) {
-        token.role = (user as { role?: string }).role;
-        token.id   = user.id;
+        token.role     = (user as { role?: string }).role;
+        token.id       = user.id;
+        token.username = (user as { username?: string | null }).username;
       } else if (token.id) {
-        // Se refresca el rol contra la base en cada request de NextAuth (no
-        // solo al loguearse): así un cambio de rol hecho por fuera (ej. por
-        // consola) se refleja sin que el usuario tenga que volver a loguearse.
-        // El middleware lee este JWT directamente vía getToken(), por eso el
+        // Se refresca contra la base en cada request de NextAuth (no solo al
+        // loguearse): así elegir un username en el onboarding, o un cambio de
+        // rol hecho por fuera, se reflejan sin volver a loguearse. El
+        // middleware lee este JWT directamente vía getToken(), por eso el
         // refresh tiene que pasar por acá y no solo por el callback de sesión.
         const dbUser = await prisma.user.findUnique({
           where: { id: token.id as string },
-          select: { role: true },
+          select: { role: true, username: true },
         });
-        if (dbUser) token.role = dbUser.role;
+        if (dbUser) {
+          token.role     = dbUser.role;
+          token.username = dbUser.username;
+        }
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
-        (session.user as { role?: string; id?: string }).role = token.role as string;
-        (session.user as { role?: string; id?: string }).id   = token.id   as string;
+        (session.user as { role?: string; id?: string; username?: string | null }).role     = token.role as string;
+        (session.user as { role?: string; id?: string; username?: string | null }).id       = token.id   as string;
+        (session.user as { role?: string; id?: string; username?: string | null }).username = token.username as string | null;
       }
       return session;
     },
@@ -88,6 +94,17 @@ export const authOptions: NextAuthOptions = {
 export async function requireAdmin() {
   const session = await getServerSession(authOptions);
   if (!session?.user || (session.user as { role?: string }).role !== "ADMIN") return null;
+  return session;
+}
+
+/**
+ * Autoriza al admin global o a usuarios con rol FOTOGRAFO, los únicos que
+ * pueden crear álbumes y subir fotos a la galería.
+ */
+export async function requireGalleryAccess() {
+  const session = await getServerSession(authOptions);
+  const role = (session?.user as { role?: string } | undefined)?.role;
+  if (!session?.user || (role !== "ADMIN" && role !== "FOTOGRAFO")) return null;
   return session;
 }
 

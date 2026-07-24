@@ -128,9 +128,11 @@ export default function AdminUsersPage() {
                     <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${
                       user.role === "ADMIN"
                         ? "text-amber bg-amber/10 border-amber/25"
+                        : user.role === "FOTOGRAFO"
+                        ? "text-cyan bg-cyan/10 border-cyan/25"
                         : "text-content/40 bg-white/5 border-white/10"
                     }`}>
-                      {user.role === "ADMIN" ? "Administrador" : "Usuario"}
+                      {user.role === "ADMIN" ? "Administrador" : user.role === "FOTOGRAFO" ? "Fotógrafo" : "Usuario"}
                     </span>
                     {user.id === selfId && (
                       <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border text-cyan bg-cyan/10 border-cyan/20">
@@ -186,6 +188,7 @@ export default function AdminUsersPage() {
                 <select value={editRole} onChange={e => setEditRole(e.target.value)}
                   className="input-premium" disabled={editing.id === selfId}>
                   <option value="USER">Usuario</option>
+                  <option value="FOTOGRAFO">Fotógrafo</option>
                   <option value="ADMIN">Administrador</option>
                 </select>
                 {editing.id === selfId && (
