@@ -41,7 +41,7 @@ export default function ComunidadPage() {
         <Reveal delay={240}>
           <div className="flex gap-3 justify-center flex-wrap">
             <Button href="/">Volver al inicio</Button>
-            <Button href="https://instagram.com/geekonuy" variant="secondary">
+            <Button href="https://instagram.com/geekon_uy" variant="secondary">
               Seguinos en Instagram
             </Button>
           </div>

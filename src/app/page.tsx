@@ -1,6 +1,7 @@
 import Stars from "@/components/Stars";
 import Reveal from "@/components/Reveal";
 import FormCardsCarousel from "@/app/components/FormCardsCarousel";
+import HeroMascots from "@/app/components/HeroMascots";
 import Button from "@/components/ui/Button";
 import Eyebrow from "@/components/ui/Eyebrow";
 import StatsTicker from "@/components/StatsTicker";
@@ -113,31 +114,8 @@ export default function HomePage() {
         {/* Grid overlay sutil */}
         <div className="absolute inset-0 pointer-events-none grid-overlay opacity-20" aria-hidden="true" />
 
-        {/* Mascotas — Gon y Eek flanqueando el hero */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/mascots/gon.webp"
-          alt=""
-          aria-hidden="true"
-          className="hidden xl:block absolute pointer-events-none select-none"
-          style={{
-            left: "-40px", bottom: "-20px", width: "340px",
-            filter: "drop-shadow(0 20px 60px rgba(123,47,255,0.35))",
-            animation: "floatGon 6s ease-in-out infinite",
-          }}
-        />
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/mascots/eek.webp"
-          alt=""
-          aria-hidden="true"
-          className="hidden xl:block absolute pointer-events-none select-none"
-          style={{
-            right: "-30px", bottom: "0px", width: "270px",
-            filter: "drop-shadow(0 20px 60px rgba(0,229,255,0.3))",
-            animation: "floatEek 5.5s ease-in-out infinite",
-          }}
-        />
+        {/* Mascotas — Gon y Eek flanqueando el hero, con parallax sutil al scrollear */}
+        <HeroMascots />
 
         {/* Contenido */}
         <div className="relative z-10 px-8 max-w-4xl mx-auto">
@@ -148,11 +126,11 @@ export default function HomePage() {
 
           <h1
             className="font-black leading-[1.05] text-content animate-fadeInUp delay-100"
-            style={{ fontSize: "clamp(2.25rem, 9vw, 7.5rem)", letterSpacing: "-0.05em", marginBottom: "1.75rem" }}
+            style={{ fontSize: "clamp(2.25rem, 7vw, 6rem)", letterSpacing: "-0.05em", marginBottom: "1.75rem" }}
           >
-            La aventura geek{" "}
+            Una experiencia<br />
             <span className="text-violet" style={{ textShadow: "0 0 80px rgba(123,47,255,0.5)" }}>
-              comienza acá.
+              de otra dimensión.
             </span>
           </h1>
 
@@ -413,7 +391,7 @@ export default function HomePage() {
             ]},
             { title: "GeekOn!", links: [
               { label: "Sobre nosotros", href: "#"                              },
-              { label: "Instagram",      href: "https://instagram.com/geekonuy" },
+              { label: "Instagram",      href: "https://instagram.com/geekon_uy" },
               { label: "Contacto",       href: "#"                              },
             ]},
           ].map((col) => (
