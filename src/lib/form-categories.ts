@@ -1,10 +1,11 @@
 export const FORM_CATEGORIES = [
-  { key: "COSPLAY",   label: "Concurso de Cosplay",  participantRole: "Cosplayer",    ownerRole: "Organizador de Cosplay",       icon: "👘", color: "#7B2FFF" },
-  { key: "ARTE",      label: "Arte / Artist Alley",  participantRole: "Artista",      ownerRole: "Organizador de Artist Alley",  icon: "🎨", color: "#00E5FF" },
-  { key: "TORNEO",    label: "Torneo / Competencia", participantRole: "Competidor",   ownerRole: "Organizador de Torneo",        icon: "🏆", color: "#F59E0B" },
-  { key: "STAND",     label: "Stand Comercial",      participantRole: "Comerciante",  ownerRole: "Encargado de Stand",           icon: "🛍️", color: "#FF2D9B" },
-  { key: "ACTIVIDAD", label: "Actividad / Taller",   participantRole: "Asistente",    ownerRole: "Expositor / Taller",           icon: "💡", color: "#10B981" },
-  { key: "OTRO",      label: "Otro",                 participantRole: "Participante", ownerRole: "Organizador",                  icon: "⭐", color: "#8B8B9E" },
+  { key: "STAND",         label: "Stand Comercial",      participantRole: "Comerciante",  ownerRole: "Encargado de Stand",             icon: "🛍️", color: "#FF2D9B" },
+  { key: "ARTE",          label: "Artist Alley",         participantRole: "Artista",      ownerRole: "Organizador de Artist Alley",    icon: "🎨", color: "#00E5FF" },
+  { key: "ACTIVIDAD",     label: "Actividades",          participantRole: "Asistente",    ownerRole: "Expositor/a de Actividad",       icon: "💡", color: "#10B981" },
+  { key: "CHARLA_TALLER", label: "Charlas / Talleres",   participantRole: "Speaker",      ownerRole: "Organizador de Charla/Taller",   icon: "🎤", color: "#3B82F6" },
+  { key: "COSPLAY",       label: "Concurso de Cosplay",  participantRole: "Cosplayer",    ownerRole: "Organizador de Cosplay",         icon: "👘", color: "#7B2FFF" },
+  { key: "TORNEO",        label: "Torneo / Competencia", participantRole: "Competidor",   ownerRole: "Organizador de Torneo",          icon: "🏆", color: "#F59E0B" },
+  { key: "OTRO",          label: "Otro",                 participantRole: "Participante", ownerRole: "Organizador",                    icon: "⭐", color: "#8B8B9E" },
 ] as const;
 
 export type FormCategoryKey = typeof FORM_CATEGORIES[number]["key"];

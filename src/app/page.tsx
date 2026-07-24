@@ -63,10 +63,10 @@ const FEATURES: Feature[] = [
 ];
 
 const FORM_CARDS = [
-  { icon: "🎨", title: "Artist Alley",          tag: "Arte",      color: "#7B2FFF", glow: "rgba(123,47,255,0.35)", desc: "Tenés arte, fanart o ilustraciones propias. Postulate para tu mesa.",      href: "/formularios/artista"   },
-  { icon: "🛍️", title: "Stand Comercial",        tag: "Comercial", color: "#00E5FF", glow: "rgba(0,229,255,0.3)",   desc: "Tienda o emprendimiento. Mostrá tus productos al público geek.",         href: "/formularios/stand"     },
-  { icon: "👘", title: "Concurso de Cosplay",    tag: "Escenario", color: "#FF2D9B", glow: "rgba(255,45,155,0.3)",  desc: "Inscribite y mostrá tu mejor cosplay en el escenario principal.",        href: "/formularios/cosplay"   },
-  { icon: "💡", title: "Propuesta de Actividad", tag: "Actividad", color: "#F59E0B", glow: "rgba(245,158,11,0.3)",  desc: "¿Tenés idea para un panel, taller o actividad? Mandanos tu propuesta.",  href: "/formularios/actividad" },
+  { icon: "🛍️", title: "Stand Comercial",    tag: "Comercial", color: "#FF2D9B", glow: "rgba(255,45,155,0.3)",  desc: "Tienda o emprendimiento. Mostrá tus productos al público geek.",        href: "/formularios?categoria=STAND"         },
+  { icon: "🎨", title: "Artist Alley",       tag: "Arte",      color: "#00E5FF", glow: "rgba(0,229,255,0.3)",   desc: "Tenés arte, fanart o ilustraciones propias. Postulate para tu mesa.",   href: "/formularios?categoria=ARTE"          },
+  { icon: "💡", title: "Actividades",        tag: "Actividad", color: "#10B981", glow: "rgba(16,185,129,0.3)",  desc: "¿Tenés idea para una actividad o experiencia? Mandanos tu propuesta.",  href: "/formularios?categoria=ACTIVIDAD"     },
+  { icon: "🎤", title: "Charlas / Talleres", tag: "Charlas",   color: "#3B82F6", glow: "rgba(59,130,246,0.3)",  desc: "Dictá una charla o taller para la comunidad geek.",                     href: "/formularios?categoria=CHARLA_TALLER" },
 ];
 
 /* ── Page ──────────────────────────────────────────────── */
@@ -350,10 +350,10 @@ export default function HomePage() {
 
           {[
             { title: "Participar", links: [
-              { label: "Artist Alley",    href: "/formularios/artista"   },
-              { label: "Stand Comercial", href: "/formularios/stand"     },
-              { label: "Cosplay",         href: "/formularios/cosplay"   },
-              { label: "Actividades",     href: "/formularios/actividad" },
+              { label: "Stand Comercial",    href: "/formularios?categoria=STAND"         },
+              { label: "Artist Alley",       href: "/formularios?categoria=ARTE"          },
+              { label: "Actividades",        href: "/formularios?categoria=ACTIVIDAD"     },
+              { label: "Charlas / Talleres", href: "/formularios?categoria=CHARLA_TALLER" },
             ]},
             { title: "Comunidad", links: [
               { label: "Foro",         href: "/comunidad" },

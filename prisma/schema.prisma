@@ -49,6 +49,7 @@ enum FormCategory {
   COSPLAY
   TORNEO
   ACTIVIDAD
+  CHARLA_TALLER
   OTRO
 }
 

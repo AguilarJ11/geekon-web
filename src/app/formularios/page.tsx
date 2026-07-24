@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import Button from "@/components/ui/Button";
 import Eyebrow from "@/components/ui/Eyebrow";
-import { categoryInfo } from "@/lib/form-categories";
+import { categoryInfo, FORM_CATEGORIES } from "@/lib/form-categories";
 
 interface Form {
   id: string;
@@ -17,15 +18,21 @@ interface Form {
   _count: { fields: number };
 }
 
-export default function FormulariosPage() {
+function FormulariosContent() {
+  const searchParams = useSearchParams();
+  const categoria = searchParams.get("categoria");
+  const activeCategory = categoria ? FORM_CATEGORIES.find(c => c.key === categoria) : undefined;
+
   const [forms, setForms] = useState<Form[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/forms")
+    setLoading(true);
+    const query = activeCategory ? `?categoria=${activeCategory.key}` : "";
+    fetch(`/api/forms${query}`)
       .then(r => (r.ok ? r.json() : []))
       .then(d => { setForms(d); setLoading(false); });
-  }, []);
+  }, [activeCategory]);
 
   return (
     <div className="min-h-screen bg-navy px-6 pt-[94px] pb-12">
@@ -36,6 +43,18 @@ export default function FormulariosPage() {
           <p className="text-content/55 mt-2">
             Postulate a los concursos, torneos y actividades abiertos de GeekOn!.
           </p>
+
+          {activeCategory && (
+            <div className="mt-4 flex items-center gap-2">
+              <span className="text-[11px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full border inline-flex items-center gap-1.5"
+                style={{ color: activeCategory.color, background: `${activeCategory.color}18`, borderColor: `${activeCategory.color}40` }}>
+                {activeCategory.icon} {activeCategory.label}
+              </span>
+              <Link href="/formularios" className="text-xs text-content/40 hover:text-content/70 transition-colors">
+                Ver todos ✕
+              </Link>
+            </div>
+          )}
         </div>
 
         {loading ? (
@@ -43,7 +62,9 @@ export default function FormulariosPage() {
         ) : forms.length === 0 ? (
           <div className="text-center py-20 text-content/35">
             <div className="text-5xl mb-4">📋</div>
-            <p className="font-medium">Todavía no hay formularios abiertos.</p>
+            <p className="font-medium">
+              {activeCategory ? `Todavía no hay formularios de ${activeCategory.label}.` : "Todavía no hay formularios abiertos."}
+            </p>
             <p className="text-sm mt-1">Volvé más adelante, se van a ir publicando a medida que se acerca el evento.</p>
           </div>
         ) : (
@@ -93,5 +114,17 @@ export default function FormulariosPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function FormulariosPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-navy flex items-center justify-center text-content/40">
+        Cargando...
+      </div>
+    }>
+      <FormulariosContent />
+    </Suspense>
   );
 }
