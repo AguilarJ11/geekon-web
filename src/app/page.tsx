@@ -72,7 +72,7 @@ const CATEGORY_CARD_COPY: Record<string, { tag: string; desc: string }> = {
   CHARLA_TALLER: { tag: "Charlas",   desc: "Dictá una charla o taller para la comunidad geek." },
   COSPLAY:       { tag: "Escenario", desc: "Inscribite y mostrá tu mejor cosplay en el escenario principal." },
   TORNEO:        { tag: "Torneo",    desc: "Competí en los torneos y competencias del evento." },
-  OTRO:          { tag: "Otras",     desc: "¿Tenés otra propuesta? Contanos de qué se trata." },
+  OTRO:          { tag: "Otras",     desc: "Otro tipo de actividades para sumar a la experiencia GeekOn!." },
 };
 
 function hexToRgba(hex: string, alpha: number) {
@@ -275,14 +275,9 @@ export default function HomePage() {
           </Reveal>
 
           <Reveal delay={240}>
-            <div className="flex flex-col gap-3 max-w-xl">
-              <div className="flex gap-3 flex-wrap">
-                <Button href="/formularios" size="lg">Participar</Button>
-                <Button href="/galeria" variant="secondary" size="lg">Ver edición anterior</Button>
-              </div>
-              <Button variant="secondary" size="lg" disabled className="w-full">
-                Proponer dinámica o actividad
-              </Button>
+            <div className="flex gap-3 flex-wrap">
+              <Button href="/formularios" size="lg">Participar</Button>
+              <Button href="/galeria" variant="secondary" size="lg">Ver edición anterior</Button>
             </div>
           </Reveal>
         </div>
@@ -383,7 +378,7 @@ export default function HomePage() {
             { title: "Participar", links: [
               { label: "Stand Comercial",    href: "/formularios?categoria=STAND"         },
               { label: "Artist Alley",       href: "/formularios?categoria=ARTE"          },
-              { label: "Concurso de Cosplay", href: "/formularios?categoria=COSPLAY"       },
+              { label: "Cosplay",             href: "/formularios?categoria=COSPLAY"       },
               { label: "Charlas / Talleres", href: "/formularios?categoria=CHARLA_TALLER" },
             ]},
             { title: "Comunidad", links: [
