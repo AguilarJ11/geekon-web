@@ -20,12 +20,20 @@ export default function Navbar() {
   const [menuOpen,   setMenuOpen]   = useState(false);
   const [scrolled,   setScrolled]   = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [pendingFriends, setPendingFriends] = useState(0);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    if (!session) { setPendingFriends(0); return; }
+    fetch("/api/friends")
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d) setPendingFriends(d.pendingReceived.length); });
+  }, [session]);
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -86,13 +94,16 @@ export default function Navbar() {
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet/50",
               )}
             >
-              <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 text-white"
+              <div className="relative w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 text-white"
                 style={{
                   background: session.user?.image
                     ? `center/cover no-repeat url(${session.user.image})`
                     : "linear-gradient(135deg, #7B2FFF 0%, #FF2D9B 100%)",
                 }}>
                 {!session.user?.image && (session.user?.name?.[0]?.toUpperCase() ?? "U")}
+                {pendingFriends > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-pink border-2 border-navy" aria-hidden="true" />
+                )}
               </div>
               <span className="hidden sm:block max-w-[100px] truncate">
                 {session.user?.name?.split(" ")[0]}
@@ -127,6 +138,11 @@ export default function Navbar() {
                       <path d="M2.5 13c0-2.761 2.239-4 5-4s5 1.239 5 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
                     </svg>
                     Mi perfil
+                    {pendingFriends > 0 && (
+                      <span className="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-pink text-white">
+                        {pendingFriends}
+                      </span>
+                    )}
                   </Link>
                   <Link
                     href="/mis-formularios"
@@ -136,7 +152,7 @@ export default function Navbar() {
                     <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
                       <path d="M2.5 3.5h10M2.5 7.5h10M2.5 11.5h6" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
                     </svg>
-                    Mis formularios
+                    Mis inscripciones
                   </Link>
                   {(session.user as { role?: string })?.role === "ADMIN" && (
                     <Link

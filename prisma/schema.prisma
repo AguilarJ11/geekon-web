@@ -13,29 +13,32 @@ model User {
   // lo elige en el onboarding obligatorio post-login (ver /elegir-usuario);
   // el middleware bloquea el resto del sitio hasta que lo complete. Se usa
   // como slug del perfil público (/perfil/[username]).
-  username      String?   @unique
-  name          String?
-  email         String    @unique
-  showEmail     Boolean   @default(false)
-  emailVerified DateTime?
-  image         String?
-  banner        String?
-  bio           String?
-  city          String?
-  instagram     String?
-  discord       String?
-  tiktok        String?
-  twitter       String?
-  interests     String[] @default([])
-  password      String?
-  role          String    @default("USER")
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  username            String?   @unique
+  name                String?
+  email               String    @unique
+  showEmail           Boolean   @default(false)
+  showFriendsPublicly Boolean   @default(false)
+  emailVerified       DateTime?
+  image               String?
+  banner              String?
+  bio                 String?
+  city                String?
+  instagram           String?
+  discord             String?
+  tiktok              String?
+  twitter             String?
+  interests           String[]  @default([])
+  password            String?
+  role                String    @default("USER")
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
 
-  badges      UserBadge[]
-  submissions FormSubmission[]
-  ownedForms  Form[]           @relation("FormOwner")
-  albums      Album[]          @relation("AlbumUploader")
+  badges           UserBadge[]
+  submissions      FormSubmission[]
+  ownedForms       Form[]           @relation("FormOwner")
+  albums           Album[]          @relation("AlbumUploader")
+  sentRequests     Friendship[]     @relation("FriendRequester")
+  receivedRequests Friendship[]     @relation("FriendAddressee")
 }
 
 enum FieldType {
@@ -215,4 +218,27 @@ model Photo {
   album Album @relation(fields: [albumId], references: [id], onDelete: Cascade)
 
   @@index([albumId, order])
+}
+
+enum FriendshipStatus {
+  PENDING
+  ACCEPTED
+}
+
+// Una fila por par de usuarios. Si quien recibe rechaza, se borra la fila
+// (no hay estado REJECTED) para que se pueda volver a mandar una solicitud
+// más adelante sin quedar bloqueado para siempre.
+model Friendship {
+  id          String           @id @default(cuid())
+  requesterId String
+  addresseeId String
+  status      FriendshipStatus @default(PENDING)
+  createdAt   DateTime         @default(now())
+  respondedAt DateTime?
+
+  requester User @relation("FriendRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+  addressee User @relation("FriendAddressee", fields: [addresseeId], references: [id], onDelete: Cascade)
+
+  @@unique([requesterId, addresseeId])
+  @@index([addresseeId, status])
 }

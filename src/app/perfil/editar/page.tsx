@@ -25,6 +25,7 @@ export default async function EditarPerfilPage() {
         twitter: user.twitter ?? "",
         interests: user.interests,
         showEmail: user.showEmail,
+        showFriendsPublicly: user.showFriendsPublicly,
       }}
     />
   );

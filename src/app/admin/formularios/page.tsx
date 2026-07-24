@@ -5,6 +5,7 @@ import Link from "next/link";
 import Button from "@/components/ui/Button";
 import Eyebrow from "@/components/ui/Eyebrow";
 import AdminTabs from "@/components/admin/AdminTabs";
+import UserSearchPicker, { type UserResult } from "@/components/admin/UserSearchPicker";
 import { FORM_CATEGORIES, categoryInfo } from "@/lib/form-categories";
 
 interface Form {
@@ -26,7 +27,7 @@ export default function AdminFormsPage() {
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState<string>("OTRO");
   const [edition, setEdition] = useState("");
-  const [ownerEmail, setOwnerEmail] = useState("");
+  const [owner, setOwner] = useState<UserResult | null>(null);
   const [createError, setCreateError] = useState("");
   const [showNew, setShowNew] = useState(false);
 
@@ -45,11 +46,11 @@ export default function AdminFormsPage() {
     const res = await fetch("/api/admin/forms", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, description, category, edition, ownerEmail }),
+      body: JSON.stringify({ title, description, category, edition, ownerUsername: owner?.username ?? "" }),
     });
     if (res.ok) {
       const form = await res.json();
-      setTitle(""); setDescription(""); setCategory("OTRO"); setEdition(""); setOwnerEmail(""); setShowNew(false);
+      setTitle(""); setDescription(""); setCategory("OTRO"); setEdition(""); setOwner(null); setShowNew(false);
       window.location.href = `/admin/formularios/${form.id}/editar`;
     } else {
       const d = await res.json().catch(() => ({}));
@@ -114,7 +115,7 @@ export default function AdminFormsPage() {
                     ))}
                   </select>
                   <p className="text-xs text-content/35 mt-1.5">
-                    Al aprobar una postulación de esta categoría, el usuario recibe el título &quot;{categoryInfo(category).participantRole}&quot; en su perfil.
+                    Categoría de participante: &quot;{categoryInfo(category).participantRole}&quot;.
                   </p>
                   {category === "STAND" && (
                     <p className="text-xs text-cyan/70 mt-1">
@@ -131,8 +132,17 @@ export default function AdminFormsPage() {
                   <label className="block text-sm font-medium mb-1.5 text-content/65">
                     Organizador / dueño (opcional)
                   </label>
-                  <input type="email" value={ownerEmail} onChange={e => setOwnerEmail(e.target.value)}
-                    className="input-premium" placeholder="email@delusuario.com" />
+                  {owner ? (
+                    <div className="flex items-center justify-between rounded-lg px-3 py-2 text-sm"
+                      style={{ background: "rgba(123,47,255,0.08)", border: "1px solid rgba(123,47,255,0.2)" }}>
+                      <span>{owner.name ?? owner.username} <span className="text-content/40">(@{owner.username})</span></span>
+                      <button type="button" onClick={() => setOwner(null)} className="text-xs text-pink/70 hover:text-pink transition-colors">
+                        Quitar
+                      </button>
+                    </div>
+                  ) : (
+                    <UserSearchPicker onSelect={setOwner} />
+                  )}
                   <p className="text-xs text-content/35 mt-1.5">
                     Si asignás un dueño, va a poder administrar este formulario y aprobar sus postulaciones
                     sin acceso al resto del panel admin.

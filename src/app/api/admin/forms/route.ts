@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
   if (!await requireAdmin()) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  const { title, description, category, edition, ownerEmail } = await req.json();
+  const { title, description, category, edition, ownerUsername } = await req.json();
   if (!title?.trim()) {
     return NextResponse.json({ error: "Título requerido" }, { status: 400 });
   }
@@ -39,9 +39,9 @@ export async function POST(req: NextRequest) {
   }
 
   let ownerId: string | null = null;
-  if (ownerEmail?.trim()) {
-    const owner = await prisma.user.findUnique({ where: { email: ownerEmail.trim() } });
-    if (!owner) return NextResponse.json({ error: "No existe ningún usuario con ese email" }, { status: 400 });
+  if (ownerUsername?.trim()) {
+    const owner = await prisma.user.findUnique({ where: { username: ownerUsername.trim() } });
+    if (!owner) return NextResponse.json({ error: "No existe ningún usuario con ese nombre de usuario" }, { status: 400 });
     ownerId = owner.id;
   }
 

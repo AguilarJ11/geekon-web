@@ -27,7 +27,7 @@ export async function PATCH(req: NextRequest) {
   const data: {
     name?: string; bio?: string; image?: string; banner?: string; city?: string | null;
     instagram?: string | null; discord?: string | null; tiktok?: string | null; twitter?: string | null;
-    interests?: string[]; showEmail?: boolean;
+    interests?: string[]; showEmail?: boolean; showFriendsPublicly?: boolean;
   } = {};
 
   if (typeof name === "string") {
@@ -66,6 +66,11 @@ export async function PATCH(req: NextRequest) {
   const showEmail = form.get("showEmail");
   if (typeof showEmail === "string") {
     data.showEmail = showEmail === "1";
+  }
+
+  const showFriendsPublicly = form.get("showFriendsPublicly");
+  if (typeof showFriendsPublicly === "string") {
+    data.showFriendsPublicly = showFriendsPublicly === "1";
   }
 
   if (form.get("interestsTouched") === "1") {

@@ -4,6 +4,7 @@ import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
 import { FieldType } from "@prisma/client";
+import UserSearchPicker from "@/components/admin/UserSearchPicker";
 import { FORM_CATEGORIES, categoryInfo } from "@/lib/form-categories";
 import { FieldRow, FIELD_TYPES, type Field } from "@/components/forms/FieldRow";
 
@@ -27,7 +28,7 @@ interface Form {
   isPublished: boolean;
   fields: Field[];
   standOptions: StandOption[];
-  owner: { name: string | null; email: string } | null;
+  owner: { name: string | null; email: string; username: string | null } | null;
 }
 
 export default function EditFormPage({ params }: { params: Promise<{ id: string }> }) {
@@ -39,7 +40,6 @@ export default function EditFormPage({ params }: { params: Promise<{ id: string 
   const [addLabel, setAddLabel] = useState("");
   const [addRequired, setAddRequired] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
-  const [ownerEmail, setOwnerEmail] = useState("");
   const [ownerSaving, setOwnerSaving] = useState(false);
   const [ownerError, setOwnerError] = useState("");
   const [showAddStand, setShowAddStand] = useState(false);
@@ -94,18 +94,16 @@ export default function EditFormPage({ params }: { params: Promise<{ id: string 
     });
   }
 
-  async function assignOwner(e: React.FormEvent) {
-    e.preventDefault();
+  async function assignOwner(ownerUsername: string) {
     setOwnerSaving(true);
     setOwnerError("");
     const res = await fetch(`/api/admin/forms/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ownerEmail }),
+      body: JSON.stringify({ ownerUsername }),
     });
     setOwnerSaving(false);
     if (!res.ok) { const d = await res.json().catch(() => ({})); setOwnerError(d.error ?? "Error"); return; }
-    setOwnerEmail("");
     load();
   }
 
@@ -113,7 +111,7 @@ export default function EditFormPage({ params }: { params: Promise<{ id: string 
     await fetch(`/api/admin/forms/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ownerEmail: "" }),
+      body: JSON.stringify({ ownerUsername: "" }),
     });
     load();
   }
@@ -323,28 +321,17 @@ export default function EditFormPage({ params }: { params: Promise<{ id: string 
             {form.owner ? (
               <div className="flex items-center justify-between rounded-lg px-3 py-2 text-sm"
                 style={{ background: "rgba(123,47,255,0.08)", border: "1px solid rgba(123,47,255,0.2)" }}>
-                <span>{form.owner.name ?? form.owner.email} <span className="text-content/40">({form.owner.email})</span></span>
+                <span>{form.owner.name ?? form.owner.username} <span className="text-content/40">(@{form.owner.username})</span></span>
                 <button onClick={removeOwner} className="text-xs text-pink/70 hover:text-pink transition-colors">Quitar</button>
               </div>
             ) : (
-              <form onSubmit={assignOwner} className="flex gap-2">
-                <input
-                  type="email"
-                  value={ownerEmail}
-                  onChange={e => setOwnerEmail(e.target.value)}
-                  className="input-premium text-sm py-2 flex-1"
-                  placeholder="email@delusuario.com"
-                  required
-                />
-                <Button type="submit" size="sm" disabled={ownerSaving}>
-                  {ownerSaving ? "Asignando..." : "Asignar"}
-                </Button>
-              </form>
+              <UserSearchPicker onSelect={(user) => assignOwner(user.username)} />
             )}
+            {ownerSaving && <p className="text-xs text-content/40 mt-1.5">Asignando...</p>}
             {ownerError && <p className="text-xs text-pink mt-1.5">{ownerError}</p>}
             <p className="text-xs text-content/35 mt-1.5">
               El dueño puede editar este formulario y aprobar sus postulaciones sin acceso al resto del panel admin.
-              Recibe automáticamente el título &quot;{categoryInfo(form.category).ownerRole}&quot;.
+              Categoría de organizador: &quot;{categoryInfo(form.category).ownerRole}&quot;.
             </p>
           </div>
 

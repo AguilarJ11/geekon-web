@@ -18,6 +18,7 @@ interface Initial {
   twitter: string;
   interests: string[];
   showEmail: boolean;
+  showFriendsPublicly: boolean;
 }
 
 export default function EditProfileForm({ initial }: { initial: Initial }) {
@@ -32,6 +33,7 @@ export default function EditProfileForm({ initial }: { initial: Initial }) {
   const [twitter, setTwitter] = useState(initial.twitter);
   const [interests, setInterests] = useState<string[]>(initial.interests);
   const [showEmail, setShowEmail] = useState(initial.showEmail);
+  const [showFriendsPublicly, setShowFriendsPublicly] = useState(initial.showFriendsPublicly);
   const [avatarPreview, setAvatarPreview] = useState(initial.image);
   const [bannerPreview, setBannerPreview] = useState(initial.banner);
   const [error, setError] = useState("");
@@ -79,6 +81,7 @@ export default function EditProfileForm({ initial }: { initial: Initial }) {
     form.set("twitter", twitter);
     form.set("interestsTouched", "1");
     form.set("showEmail", showEmail ? "1" : "0");
+    form.set("showFriendsPublicly", showFriendsPublicly ? "1" : "0");
     interests.forEach((i) => form.append("interests", i));
     if (avatarFile.current) form.set("avatar", avatarFile.current);
     if (bannerFile.current) form.set("banner", bannerFile.current);
@@ -227,6 +230,21 @@ export default function EditProfileForm({ initial }: { initial: Initial }) {
                 <span className="text-sm text-content/75">
                   Mostrar mi email en mi perfil público
                   <span className="block text-xs text-content/35 mt-0.5">Por defecto está oculto para el resto de la comunidad.</span>
+                </span>
+              </label>
+            </div>
+
+            <div>
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={showFriendsPublicly}
+                  onChange={(e) => setShowFriendsPublicly(e.target.checked)}
+                  className="accent-violet"
+                />
+                <span className="text-sm text-content/75">
+                  Mostrar mi lista de amigos en mi perfil público
+                  <span className="block text-xs text-content/35 mt-0.5">Por defecto está oculta para el resto de la comunidad.</span>
                 </span>
               </label>
             </div>

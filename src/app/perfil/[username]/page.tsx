@@ -3,8 +3,9 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { notFound, redirect } from "next/navigation";
 import Stars from "@/components/Stars";
-import { BadgeCard, EmptyBadges, GalleryAlbumCard } from "../components";
+import { BadgeCard, EmptyBadges, GalleryAlbumCard, FriendCard, EmptyFriends } from "../components";
 import { INTEREST_CATALOG, SOCIAL_LINKS, STAFF_ROLES, VISITANTE_ROLE } from "@/lib/profile-catalog";
+import FriendActionButton from "./FriendActionButton";
 
 // Vista pública de un perfil (a diferencia de /perfil, que es la vista propia
 // editable). Solo expone datos pensados para mostrarse a cualquier visitante:
@@ -13,6 +14,7 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
   const { username } = await params;
 
   const session = await getServerSession(authOptions);
+  const selfId = (session?.user as { id?: string } | undefined)?.id;
   const selfUsername = (session?.user as { username?: string | null } | undefined)?.username;
   if (selfUsername === username) redirect("/perfil");
 
@@ -31,6 +33,35 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
         orderBy: { createdAt: "desc" },
         select: { id: true, title: true, edition: true, coverUrl: true, _count: { select: { photos: { where: { status: "APPROVED" } } } } },
       })
+    : [];
+
+  const friendship = selfId
+    ? await prisma.friendship.findFirst({
+        where: {
+          OR: [
+            { requesterId: selfId, addresseeId: user.id },
+            { requesterId: user.id, addresseeId: selfId },
+          ],
+        },
+      })
+    : null;
+
+  const friendStatus = !friendship
+    ? "NONE" as const
+    : friendship.status === "ACCEPTED"
+    ? "FRIENDS" as const
+    : friendship.requesterId === selfId
+    ? "PENDING_SENT" as const
+    : "PENDING_RECEIVED" as const;
+
+  const friends = user.showFriendsPublicly
+    ? (await prisma.friendship.findMany({
+        where: { status: "ACCEPTED", OR: [{ requesterId: user.id }, { addresseeId: user.id }] },
+        include: {
+          requester: { select: { id: true, username: true, name: true, image: true } },
+          addressee: { select: { id: true, username: true, name: true, image: true } },
+        },
+      })).map((f) => (f.requesterId === user.id ? f.addressee : f.requester))
     : [];
 
   const primaryRole = STAFF_ROLES[user.role] ?? VISITANTE_ROLE;
@@ -158,6 +189,16 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
                 {primaryRole.label}
               </span>
             </div>
+
+            {selfId && (
+              <div className="flex justify-center mt-4">
+                <FriendActionButton
+                  targetUsername={username}
+                  initialStatus={friendStatus}
+                  initialFriendshipId={friendship?.id ?? null}
+                />
+              </div>
+            )}
 
             {user.bio && (
               <p style={{
@@ -312,6 +353,33 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
               </div>
             )}
           </section>
+
+          {/* ── Amigos (solo si el usuario eligió mostrarla) ────── */}
+          {user.showFriendsPublicly && (
+            <>
+              <div className="gradient-divider animate-fadeIn delay-400" style={{ marginBottom: "2.5rem", marginTop: "2.5rem" }} />
+              <section className="animate-fadeInUp delay-400">
+                <div style={{ marginBottom: "1.25rem" }}>
+                  <h2 style={{ fontSize: "0.85rem", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase" }}>
+                    Amigos
+                  </h2>
+                  <p style={{ fontSize: "0.78rem", color: "rgba(234,230,255,0.35)", marginTop: "3px" }}>
+                    {friends.length} amigo{friends.length === 1 ? "" : "s"}
+                  </p>
+                </div>
+
+                {friends.length === 0 ? (
+                  <EmptyFriends />
+                ) : (
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "10px" }}>
+                    {friends.map((friend) => (
+                      <FriendCard key={friend.id} user={friend} />
+                    ))}
+                  </div>
+                )}
+              </section>
+            </>
+          )}
 
         </div>
       </div>

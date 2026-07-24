@@ -10,7 +10,7 @@ export async function GET(_: NextRequest, { params }: { params: Promise<{ id: st
     include: {
       fields: { orderBy: { order: "asc" } },
       standOptions: { orderBy: { order: "asc" } },
-      owner: { select: { name: true, email: true } },
+      owner: { select: { name: true, email: true, username: true } },
     },
   });
   if (!form) return NextResponse.json({ error: "Not found" }, { status: 404 });
@@ -35,12 +35,12 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     if ("depositDueDate" in data) update.depositDueDate = data.depositDueDate ? new Date(data.depositDueDate) : null;
     if ("fullPaymentDueDate" in data) update.fullPaymentDueDate = data.fullPaymentDueDate ? new Date(data.fullPaymentDueDate) : null;
 
-    if ("ownerEmail" in data) {
-      if (!data.ownerEmail?.trim()) {
+    if ("ownerUsername" in data) {
+      if (!data.ownerUsername?.trim()) {
         update.ownerId = null;
       } else {
-        const owner = await prisma.user.findUnique({ where: { email: data.ownerEmail.trim() } });
-        if (!owner) return NextResponse.json({ error: "No existe ningún usuario con ese email" }, { status: 400 });
+        const owner = await prisma.user.findUnique({ where: { username: data.ownerUsername.trim() } });
+        if (!owner) return NextResponse.json({ error: "No existe ningún usuario con ese nombre de usuario" }, { status: 400 });
         update.ownerId = owner.id;
       }
     }

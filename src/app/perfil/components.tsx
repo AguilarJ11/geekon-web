@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 
 export function BadgeCard({
@@ -147,40 +148,48 @@ const STATUS_STYLE: Record<SubmissionStatus, { color: string; background: string
   REJECTED: { color: "#FF2D9B", background: "rgba(255,45,155,0.1)", borderColor: "rgba(255,45,155,0.3)" },
 };
 
+// Mismo look que las tarjetas de /inscripciones (y "Mis inscripciones" ·
+// gestionás): fondo #0A0726, borde sutil, categoría en su propia línea. Solo
+// cambia el contenido/acción de la derecha (acá es un link a la postulación
+// entera, no un botón puntual), no la apariencia del contenedor.
 export function ApplicationCard({
-  id, title, edition, categoryIcon, categoryLabel, createdAt, status, isWinner,
+  id, title, edition, categoryIcon, categoryLabel, categoryColor, createdAt, status, isWinner,
 }: {
   id: string; title: string; edition: string | null;
-  categoryIcon: string; categoryLabel: string;
+  categoryIcon: string; categoryLabel: string; categoryColor: string;
   createdAt: Date; status: SubmissionStatus; isWinner: boolean;
 }) {
   return (
     <Link href={`/perfil/postulaciones/${id}`} style={{
-      display: "flex", alignItems: "center", justifyContent: "space-between",
-      gap: "12px", padding: "14px 18px",
-      background: "rgba(255,255,255,0.02)",
-      border: "1px solid rgba(255,255,255,0.08)",
-      borderRadius: "14px",
+      display: "flex", alignItems: "center", gap: "16px",
+      padding: "20px", borderRadius: "12px",
+      background: "#0A0726",
+      border: "1px solid rgba(255,255,255,0.07)",
       textDecoration: "none", color: "inherit",
-      transition: "border-color 0.2s, background 0.2s",
-    }}
-    onMouseEnter={(e) => {
-      e.currentTarget.style.borderColor = "rgba(123,47,255,0.35)";
-      e.currentTarget.style.background = "rgba(123,47,255,0.04)";
-    }}
-    onMouseLeave={(e) => {
-      e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
-      e.currentTarget.style.background = "rgba(255,255,255,0.02)";
     }}>
-      <div>
-        <p style={{ fontSize: "0.85rem", fontWeight: 700 }}>
-          <span aria-hidden="true">{categoryIcon}</span> {title}{edition && <span style={{ color: "rgba(234,230,255,0.4)", fontWeight: 500 }}> · {edition}</span>}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <p style={{
+          fontSize: "1rem", fontWeight: 600,
+          whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+        }}>
+          {title}
         </p>
-        <p style={{ fontSize: "0.7rem", color: "rgba(234,230,255,0.35)", marginTop: "2px" }}>
-          {categoryLabel} · Enviada el {new Date(createdAt).toLocaleDateString("es-UY", { day: "2-digit", month: "short", year: "numeric" })}
-        </p>
+        <span style={{
+          display: "inline-flex", alignItems: "center", gap: "4px",
+          fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em",
+          padding: "2px 8px", borderRadius: "9999px",
+          border: `1px solid ${categoryColor}40`,
+          color: categoryColor, background: `${categoryColor}18`,
+          marginTop: "6px", marginBottom: "4px",
+        }}>
+          <span aria-hidden="true">{categoryIcon}</span> {categoryLabel}
+        </span>
+        <div style={{ fontSize: "0.75rem", color: "rgba(234,230,255,0.4)", display: "flex", gap: "12px", marginTop: "4px" }}>
+          {edition && <span>{edition}</span>}
+          <span>Enviada el {new Date(createdAt).toLocaleDateString("es-UY", { day: "2-digit", month: "short", year: "numeric" })}</span>
+        </div>
       </div>
-      <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "10px", flexShrink: 0 }}>
         {isWinner && (
           <span style={{
             padding: "4px 12px", borderRadius: "100px",
@@ -204,5 +213,167 @@ export function ApplicationCard({
         <span style={{ color: "rgba(234,230,255,0.3)", fontSize: "0.9rem" }} aria-hidden="true">›</span>
       </div>
     </Link>
+  );
+}
+
+interface PublicUser {
+  id: string;
+  // Nulo solo en teoría (el gate de onboarding obliga a elegir username antes
+  // de poder usar el resto del sitio, así que para cuando existe una amistad
+  // ambos ya tienen uno) — lo tipamos igual para calzar con el modelo de Prisma.
+  username: string | null;
+  name: string | null;
+  image: string | null;
+}
+
+function Avatar({ user, size = 40 }: { user: PublicUser; size?: number }) {
+  const initials = user.name
+    ? user.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
+    : "?";
+  return (
+    <div style={{
+      width: size, height: size, borderRadius: "50%", flexShrink: 0,
+      display: "flex", alignItems: "center", justifyContent: "center",
+      fontSize: size * 0.36, fontWeight: 700, color: "#fff",
+      background: user.image ? `center/cover no-repeat url(${user.image})` : "linear-gradient(135deg, #7B2FFF 0%, #FF2D9B 100%)",
+    }}>
+      {!user.image && initials}
+    </div>
+  );
+}
+
+export function FriendCard({ user }: { user: PublicUser }) {
+  if (!user.username) return null;
+  return (
+    <Link href={`/perfil/${user.username}`} style={{
+      display: "flex", alignItems: "center", gap: "10px",
+      padding: "10px 12px", borderRadius: "14px",
+      background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.08)",
+      textDecoration: "none", color: "inherit",
+      transition: "border-color 0.2s, background 0.2s",
+    }}
+    onMouseEnter={(e) => {
+      e.currentTarget.style.borderColor = "rgba(123,47,255,0.35)";
+      e.currentTarget.style.background = "rgba(123,47,255,0.04)";
+    }}
+    onMouseLeave={(e) => {
+      e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
+      e.currentTarget.style.background = "rgba(255,255,255,0.02)";
+    }}>
+      <Avatar user={user} />
+      <div style={{ minWidth: 0 }}>
+        <p style={{ fontSize: "0.82rem", fontWeight: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+          {user.name ?? "Sin nombre"}
+        </p>
+        <p style={{ fontSize: "0.72rem", color: "rgba(234,230,255,0.4)" }}>@{user.username}</p>
+      </div>
+    </Link>
+  );
+}
+
+export function EmptyFriends() {
+  return (
+    <div style={{
+      background: "rgba(123,47,255,0.04)",
+      border: "1px dashed rgba(123,47,255,0.2)",
+      borderRadius: "20px",
+      padding: "2rem",
+      textAlign: "center",
+    }}>
+      <div style={{ fontSize: "2.5rem", marginBottom: "10px", opacity: 0.5 }}>🤝</div>
+      <p style={{ fontWeight: 600, fontSize: "0.9rem" }}>Todavía no tenés amigos agregados</p>
+      <p style={{ fontSize: "0.78rem", color: "rgba(234,230,255,0.35)", marginTop: "4px" }}>
+        Entrá al perfil de alguien de la comunidad y mandale una solicitud
+      </p>
+    </div>
+  );
+}
+
+interface PendingItem { friendshipId: string; user: PublicUser }
+
+export function FriendRequestsPanel({ initialPendingReceived, initialPendingSent }: {
+  initialPendingReceived: PendingItem[];
+  initialPendingSent: PendingItem[];
+}) {
+  const [pendingReceived, setPendingReceived] = useState(initialPendingReceived);
+  const [pendingSent, setPendingSent] = useState(initialPendingSent);
+  const [busyId, setBusyId] = useState<string | null>(null);
+
+  async function accept(friendshipId: string) {
+    setBusyId(friendshipId);
+    const res = await fetch(`/api/friends/${friendshipId}`, { method: "PATCH" });
+    if (res.ok) setPendingReceived((list) => list.filter((p) => p.friendshipId !== friendshipId));
+    setBusyId(null);
+  }
+
+  async function reject(friendshipId: string) {
+    setBusyId(friendshipId);
+    const res = await fetch(`/api/friends/${friendshipId}`, { method: "DELETE" });
+    if (res.ok) setPendingReceived((list) => list.filter((p) => p.friendshipId !== friendshipId));
+    setBusyId(null);
+  }
+
+  async function cancel(friendshipId: string) {
+    setBusyId(friendshipId);
+    const res = await fetch(`/api/friends/${friendshipId}`, { method: "DELETE" });
+    if (res.ok) setPendingSent((list) => list.filter((p) => p.friendshipId !== friendshipId));
+    setBusyId(null);
+  }
+
+  if (pendingReceived.length === 0 && pendingSent.length === 0) return null;
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+      {pendingReceived.map(({ friendshipId, user }) => (
+        <div key={friendshipId} style={{
+          display: "flex", alignItems: "center", gap: "10px",
+          padding: "10px 12px", borderRadius: "14px",
+          background: "rgba(0,229,255,0.05)", border: "1px solid rgba(0,229,255,0.2)",
+        }}>
+          <Avatar user={user} size={36} />
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p style={{ fontSize: "0.82rem", fontWeight: 700 }}>{user.name ?? "Sin nombre"}</p>
+            <p style={{ fontSize: "0.72rem", color: "rgba(234,230,255,0.4)" }}>@{user.username} te mandó una solicitud</p>
+          </div>
+          <div style={{ display: "flex", gap: "6px", flexShrink: 0 }}>
+            <button onClick={() => accept(friendshipId)} disabled={busyId === friendshipId}
+              style={{
+                fontSize: "0.72rem", fontWeight: 700, padding: "6px 12px", borderRadius: "100px",
+                background: "#00E5FF", color: "#05031A", border: "none", cursor: "pointer",
+              }}>
+              Aceptar
+            </button>
+            <button onClick={() => reject(friendshipId)} disabled={busyId === friendshipId}
+              style={{
+                fontSize: "0.72rem", fontWeight: 700, padding: "6px 12px", borderRadius: "100px",
+                background: "transparent", color: "rgba(234,230,255,0.5)", border: "1px solid rgba(255,255,255,0.15)", cursor: "pointer",
+              }}>
+              Rechazar
+            </button>
+          </div>
+        </div>
+      ))}
+
+      {pendingSent.map(({ friendshipId, user }) => (
+        <div key={friendshipId} style={{
+          display: "flex", alignItems: "center", gap: "10px",
+          padding: "10px 12px", borderRadius: "14px",
+          background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.08)",
+        }}>
+          <Avatar user={user} size={36} />
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p style={{ fontSize: "0.82rem", fontWeight: 700 }}>{user.name ?? "Sin nombre"}</p>
+            <p style={{ fontSize: "0.72rem", color: "rgba(234,230,255,0.4)" }}>Solicitud enviada, esperando respuesta</p>
+          </div>
+          <button onClick={() => cancel(friendshipId)} disabled={busyId === friendshipId}
+            style={{
+              fontSize: "0.72rem", fontWeight: 600, padding: "6px 12px", borderRadius: "100px",
+              background: "transparent", color: "rgba(234,230,255,0.4)", border: "1px solid rgba(255,255,255,0.12)", cursor: "pointer", flexShrink: 0,
+            }}>
+            Cancelar
+          </button>
+        </div>
+      ))}
+    </div>
   );
 }

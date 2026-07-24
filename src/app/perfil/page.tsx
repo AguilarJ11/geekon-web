@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import Stars from "@/components/Stars";
 import Button from "@/components/ui/Button";
-import { BadgeCard, EmptyBadges, ActionCard, ApplicationCard, GalleryAlbumCard } from "./components";
+import { BadgeCard, EmptyBadges, ActionCard, ApplicationCard, GalleryAlbumCard, FriendCard, EmptyFriends, FriendRequestsPanel } from "./components";
 import { INTEREST_CATALOG, SOCIAL_LINKS, STAFF_ROLES, VISITANTE_ROLE } from "@/lib/profile-catalog";
 import { categoryInfo } from "@/lib/form-categories";
 
@@ -45,6 +45,22 @@ export default async function PerfilPage() {
   });
 
   const approvedSubmissions = user.submissions.filter((s) => s.status === "APPROVED");
+
+  const PUBLIC_SELECT = { id: true, username: true, name: true, image: true } as const;
+  const friendships = await prisma.friendship.findMany({
+    where: { OR: [{ requesterId: user.id }, { addresseeId: user.id }] },
+    include: { requester: { select: PUBLIC_SELECT }, addressee: { select: PUBLIC_SELECT } },
+    orderBy: { createdAt: "desc" },
+  });
+  const friends = friendships
+    .filter((f) => f.status === "ACCEPTED")
+    .map((f) => (f.requesterId === user.id ? f.addressee : f.requester));
+  const pendingReceived = friendships
+    .filter((f) => f.status === "PENDING" && f.addresseeId === user.id)
+    .map((f) => ({ friendshipId: f.id, user: f.requester }));
+  const pendingSent = friendships
+    .filter((f) => f.status === "PENDING" && f.requesterId === user.id)
+    .map((f) => ({ friendshipId: f.id, user: f.addressee }));
 
   // Por ahora el único rol que se muestra es el asignado explícitamente
   // (staff/admin/fotógrafo, etc.) — crear o ser dueño de un formulario, o
@@ -346,6 +362,35 @@ export default async function PerfilPage() {
             )}
           </section>
 
+          {/* ── Amigos ──────────────────────────────────────────── */}
+          <div className="gradient-divider animate-fadeIn delay-350" style={{ marginBottom: "2.5rem" }} />
+          <section className="animate-fadeInUp delay-350" style={{ marginBottom: "2.5rem" }}>
+            <div style={{ marginBottom: "1.25rem" }}>
+              <h2 style={{ fontSize: "0.85rem", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase" }}>
+                Amigos
+              </h2>
+              <p style={{ fontSize: "0.78rem", color: "rgba(234,230,255,0.35)", marginTop: "3px" }}>
+                {friends.length} amigo{friends.length === 1 ? "" : "s"}
+              </p>
+            </div>
+
+            {(pendingReceived.length > 0 || pendingSent.length > 0) && (
+              <div style={{ marginBottom: "1rem" }}>
+                <FriendRequestsPanel initialPendingReceived={pendingReceived} initialPendingSent={pendingSent} />
+              </div>
+            )}
+
+            {friends.length === 0 ? (
+              <EmptyFriends />
+            ) : (
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "10px" }}>
+                {friends.map((friend) => (
+                  <FriendCard key={friend.id} user={friend} />
+                ))}
+              </div>
+            )}
+          </section>
+
           {/* ── Mis galerías (solo rol FOTOGRAFO) ──────────────── */}
           {user.role === "FOTOGRAFO" && (
             <>
@@ -413,6 +458,7 @@ export default async function PerfilPage() {
                         edition={sub.form.edition}
                         categoryIcon={cat.icon}
                         categoryLabel={cat.label}
+                        categoryColor={cat.color}
                         createdAt={sub.createdAt}
                         status={sub.status}
                         isWinner={sub.isWinner}
