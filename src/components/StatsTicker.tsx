@@ -5,7 +5,6 @@ const ITEMS = [
   { value: "35+",    label: "Artistas"      },
   { value: "15+",    label: "Stands"        },
   { value: "2",      label: "Ediciones"     },
-  { value: "100%",   label: "Entrada libre" },
 ];
 
 export default function StatsTicker() {

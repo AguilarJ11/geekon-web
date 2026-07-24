@@ -2,8 +2,9 @@
 
 import { useEffect, useRef } from "react";
 
-const MAX_OFFSET = 80;
-const SCROLL_FACTOR = 0.18;
+const SCROLL_FACTOR = 0.35;
+const BOTTOM_BUFFER = 16;
+const REACH_RATIO = 0.45; // no llegan hasta abajo del todo, se quedan a mitad de camino
 
 export default function HeroMascots() {
   const gonRef = useRef<HTMLDivElement>(null);
@@ -19,20 +20,40 @@ export default function HeroMascots() {
         document.body.scrollTop || 0,
       );
     }
-    function onScroll() {
-      const offset = Math.min(getScrollY() * SCROLL_FACTOR, MAX_OFFSET);
-      const t = `translateY(${offset}px)`;
-      if (gonRef.current) gonRef.current.style.transform = t;
-      if (eekRef.current) eekRef.current.style.transform = t;
+
+    // Tope dinámico: la distancia hasta el borde inferior del hero (donde
+    // el overflow-hidden las corta igual, pero así llegan justo hasta ahí
+    // en vez de quedar a mitad de camino).
+    function maxOffsetFor(el: HTMLDivElement | null) {
+      if (!el) return 0;
+      const section = el.closest("section");
+      if (!section) return 0;
+      const fullDistance = Math.max(0, section.clientHeight - el.offsetTop - el.offsetHeight - BOTTOM_BUFFER);
+      return fullDistance * REACH_RATIO;
     }
+
+    function onScroll() {
+      const scrollOffset = getScrollY() * SCROLL_FACTOR;
+      if (gonRef.current) {
+        const offset = Math.min(scrollOffset, maxOffsetFor(gonRef.current));
+        gonRef.current.style.transform = `translateY(${offset}px)`;
+      }
+      if (eekRef.current) {
+        const offset = Math.min(scrollOffset, maxOffsetFor(eekRef.current));
+        eekRef.current.style.transform = `translateY(${offset}px)`;
+      }
+    }
+
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     document.addEventListener("scroll", onScroll, { passive: true });
     document.body.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
     return () => {
       window.removeEventListener("scroll", onScroll);
       document.removeEventListener("scroll", onScroll);
       document.body.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
     };
   }, []);
 

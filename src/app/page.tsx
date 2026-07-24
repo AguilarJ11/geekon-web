@@ -9,15 +9,6 @@ import { FORM_CATEGORIES } from "@/lib/form-categories";
 
 /* ── Feature icons ──────────────────────────────────────── */
 
-function IconTicket() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M1.5 8a2 2 0 012-2h13a2 2 0 012 2 2.5 2.5 0 010 4 2 2 0 01-2 2h-13a2 2 0 01-2-2 2.5 2.5 0 010-4z"/>
-      <line x1="13" y1="6.5" x2="13" y2="13.5" strokeDasharray="2 2"/>
-    </svg>
-  );
-}
-
 function IconGlobe() {
   return (
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
@@ -37,6 +28,17 @@ function IconSpark() {
   );
 }
 
+function IconUsers() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="7" cy="6.5" r="2.75"/>
+      <path d="M1.75 17c0-2.9 2.35-5.25 5.25-5.25S12.25 14.1 12.25 17"/>
+      <circle cx="14.5" cy="7.25" r="2.15"/>
+      <path d="M13.25 11.9c2.35.35 4.05 2.35 4.05 4.85"/>
+    </svg>
+  );
+}
+
 /* ── Data ──────────────────────────────────────────────── */
 
 import type { ReactElement } from "react";
@@ -45,10 +47,10 @@ type Feature = { Icon: () => ReactElement; color: string; title: string; desc: s
 
 const FEATURES: Feature[] = [
   {
-    Icon: IconTicket,
+    Icon: IconUsers,
     color: "#7B2FFF",
-    title: "Entrada siempre libre",
-    desc: "GeekOn! es y será siempre de acceso libre. Creemos que la cultura geek no tiene precio de entrada.",
+    title: "Un espacio para todos",
+    desc: "GeekOn! es un espacio de encuentro para los distintos fandoms: anime, gaming, cómics, cine y mucho más.",
   },
   {
     Icon: IconGlobe,
@@ -59,8 +61,8 @@ const FEATURES: Feature[] = [
   {
     Icon: IconSpark,
     color: "#FF2D9B",
-    title: "Arte, juego y cultura",
-    desc: "Artist Alley, cosplay, videojuegos en vivo, paneles y más. Siempre hay algo nuevo para descubrir.",
+    title: "Actividades para todos",
+    desc: "Torneos, cosplay, charlas y talleres, zona de gaming, TCG, rol, coleccionismo y muchas actividades más. Siempre hay algo nuevo para descubrir.",
   },
 ];
 
@@ -120,10 +122,6 @@ export default function HomePage() {
         {/* Contenido */}
         <div className="relative z-10 px-8 max-w-4xl mx-auto">
 
-          <Eyebrow color="violet" className="mb-8 animate-fadeIn">
-            Comunidad Geek · Uruguay · 2026
-          </Eyebrow>
-
           <h1
             className="font-black leading-[1.05] text-content animate-fadeInUp delay-100"
             style={{ fontSize: "clamp(2.25rem, 7vw, 6rem)", letterSpacing: "-0.05em", marginBottom: "1.75rem" }}
@@ -138,7 +136,7 @@ export default function HomePage() {
             className="text-content/55 mx-auto animate-fadeInUp delay-200"
             style={{ fontSize: "1.125rem", lineHeight: 1.75, maxWidth: "460px", marginBottom: "2.75rem" }}
           >
-            El evento geek más grande de Uruguay. Entrada libre, comunidad activa y experiencias únicas todo el año.
+            El evento geek más grande de Uruguay. Comunidad activa y experiencias únicas todo el año.
           </p>
 
           <div className="flex gap-3 justify-center flex-wrap animate-fadeInUp delay-300">
@@ -225,7 +223,7 @@ export default function HomePage() {
       </section>
 
       {/* ══════════════════════════════════════════════════
-          2DA EDICIÓN — sección tipográfica, sin mascot
+          3RA EDICIÓN — sección tipográfica, sin mascot
       ══════════════════════════════════════════════════ */}
       <section className="relative z-10 overflow-hidden py-32 bg-surface/25">
 
@@ -251,12 +249,12 @@ export default function HomePage() {
             WebkitTextStroke: "1.5px rgba(123,47,255,0.09)",
           }}
         >
-          02
+          03
         </div>
 
         <div className="relative max-w-6xl mx-auto px-8">
           <Reveal>
-            <Eyebrow color="violet" className="mb-8">Segunda Edición</Eyebrow>
+            <Eyebrow color="violet" className="mb-8">Tercera Edición</Eyebrow>
           </Reveal>
 
           <Reveal delay={80}>
@@ -265,7 +263,7 @@ export default function HomePage() {
               style={{ fontSize: "clamp(2.5rem, 6vw, 5rem)", letterSpacing: "-0.045em", lineHeight: 1.04 }}
             >
               <span className="text-violet">GeekOn!</span>{" "}
-              <span className="text-content">2026</span>
+              <span className="text-content">2027</span>
               <br />
               <span className="text-content">ya está aquí.</span>
             </h2>
@@ -279,7 +277,7 @@ export default function HomePage() {
 
           <Reveal delay={240}>
             <div className="flex gap-3 flex-wrap">
-              <Button href="/formularios/artista" size="lg">Participar</Button>
+              <Button href="/formularios" size="lg">Participar</Button>
               <Button href="/galeria" variant="secondary" size="lg">Ver edición anterior</Button>
             </div>
           </Reveal>
@@ -422,7 +420,7 @@ export default function HomePage() {
           style={{ borderTop: "1px solid rgba(255,255,255,0.04)", paddingTop: "1.5rem" }}
         >
           <span className="text-sm text-content/25">© 2026 GeekOn! — Uruguay</span>
-          <span className="text-sm text-content/20">Entrada libre siempre</span>
+          <span className="text-sm text-content/20">Comunidad geek de Uruguay</span>
         </div>
       </footer>
     </>
