@@ -69,11 +69,10 @@ const FEATURES: Feature[] = [
 const CATEGORY_CARD_COPY: Record<string, { tag: string; desc: string }> = {
   STAND:         { tag: "Comercial", desc: "Tienda o emprendimiento. Mostrá tus productos al público geek." },
   ARTE:          { tag: "Arte",      desc: "Tenés arte, fanart o ilustraciones propias. Postulate para tu mesa." },
-  ACTIVIDAD:     { tag: "Actividad", desc: "¿Tenés idea para una actividad o experiencia? Mandanos tu propuesta." },
   CHARLA_TALLER: { tag: "Charlas",   desc: "Dictá una charla o taller para la comunidad geek." },
   COSPLAY:       { tag: "Escenario", desc: "Inscribite y mostrá tu mejor cosplay en el escenario principal." },
   TORNEO:        { tag: "Torneo",    desc: "Competí en los torneos y competencias del evento." },
-  OTRO:          { tag: "Otro",      desc: "¿Tenés otra propuesta? Contanos de qué se trata." },
+  OTRO:          { tag: "Otras",     desc: "¿Tenés otra propuesta? Contanos de qué se trata." },
 };
 
 function hexToRgba(hex: string, alpha: number) {
@@ -276,9 +275,14 @@ export default function HomePage() {
           </Reveal>
 
           <Reveal delay={240}>
-            <div className="flex gap-3 flex-wrap">
-              <Button href="/formularios" size="lg">Participar</Button>
-              <Button href="/galeria" variant="secondary" size="lg">Ver edición anterior</Button>
+            <div className="flex flex-col gap-3 max-w-xl">
+              <div className="flex gap-3 flex-wrap">
+                <Button href="/formularios" size="lg">Participar</Button>
+                <Button href="/galeria" variant="secondary" size="lg">Ver edición anterior</Button>
+              </div>
+              <Button variant="secondary" size="lg" disabled className="w-full">
+                Proponer dinámica o actividad
+              </Button>
             </div>
           </Reveal>
         </div>
@@ -371,7 +375,7 @@ export default function HomePage() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/geekon-logo.webp" alt="GeekOn!" className="h-9 w-auto mb-3" />
             <p className="text-sm leading-relaxed text-content/30">
-              La comunidad geek más grande de Uruguay. Entrada siempre libre.
+              La comunidad geek más grande de Uruguay.
             </p>
           </div>
 
@@ -379,7 +383,7 @@ export default function HomePage() {
             { title: "Participar", links: [
               { label: "Stand Comercial",    href: "/formularios?categoria=STAND"         },
               { label: "Artist Alley",       href: "/formularios?categoria=ARTE"          },
-              { label: "Actividades",        href: "/formularios?categoria=ACTIVIDAD"     },
+              { label: "Concurso de Cosplay", href: "/formularios?categoria=COSPLAY"       },
               { label: "Charlas / Talleres", href: "/formularios?categoria=CHARLA_TALLER" },
             ]},
             { title: "Comunidad", links: [
